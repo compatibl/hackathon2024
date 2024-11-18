@@ -100,9 +100,9 @@ class OneStepSolution(HackathonSolution):
                 try:
                     pay_leg_ccy = json_output.get("pay_leg_ccy")
                     if isinstance(pay_leg_ccy, str):
-                        output_.pay_leg_basis = pay_leg_ccy
+                        output_.pay_leg_ccy = pay_leg_ccy
                 except Exception as e:
-                    output_.pay_leg_basis = str(e)
+                    output_.pay_leg_ccy = str(e)
 
                 # Pay leg payment frequency
                 try:
@@ -172,9 +172,9 @@ class OneStepSolution(HackathonSolution):
                 try:
                     rec_leg_ccy = json_output.get("rec_leg_ccy")
                     if isinstance(rec_leg_ccy, str):
-                        output_.rec_leg_basis = rec_leg_ccy
+                        output_.rec_leg_ccy = rec_leg_ccy
                 except Exception as e:
-                    output_.rec_leg_basis = str(e)
+                    output_.rec_leg_ccy = str(e)
 
                 # Receive leg payment frequency
                 try:

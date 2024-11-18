@@ -58,7 +58,8 @@ class XpSolution(HackathonSolution):
             output = llm.completion(query)
             json_output = RetrieverUtil.extract_json(output) or {}
 
-            output2 = llm2.completion(query)
+            query2 = "You are a challenger to the responses from another trade inputer. \n" + query
+            output2 = llm2.completion(query2)
             json_output2 = RetrieverUtil.extract_json(output2) or {}
 
             diffs = self._compare_dicts(json_output, json_output2)

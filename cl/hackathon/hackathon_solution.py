@@ -383,7 +383,7 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
 
         # Iterate over expected output fields and compare values
         for field_name in [
-            f for f in expected_output_fields if f not in expected_output_key_fields and f != "entry_text"
+            f for f in expected_output_fields if f not in expected_output_key_fields and f not in ("entry_text", "status")
         ]:
 
             expected_field_value = getattr(expected_output, field_name, None)

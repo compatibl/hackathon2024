@@ -127,12 +127,12 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
             completed_output_count = len([x for x in self.outputs if x.status == "Completed"])
             if output_count == completed_output_count:
                 self.status = "Completed"
-                try:
-                    if is_resulting_solution:
-                        self.retrievals = self.view_retrievals()
-                except Exception as e:
-                    # Continue even if retrievals are not available
-                    pass
+                # try:
+                #     if is_resulting_solution:
+                #         self.retrievals = self.view_retrievals()
+                # except Exception as e:
+                #     # Continue even if retrievals are not available
+                #     pass
 
             else:
                 pct_done = int(round(completed_output_count / output_count * 100, 0))

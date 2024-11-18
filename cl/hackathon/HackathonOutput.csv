@@ -5,3 +5,20 @@ Client pays: 6M Term SOFR, semi-annual, act/360
 Client receives: 3.45%, semi-annual, 30/360
 Start date: 10 November 2009
 Tenor: 5y",2009-11-10,,5,10000000,,6,act/360,6M Term SOFR,,,10000000,,6,30/360,,,3.45
+ExpectedResults,Development,1,0,"USDEUR cross currency swap (fixed/fixed), 10 y maturity
+Client pays 2.3% USD, we pay 1.7% EUR",,10,,,EUR,,,,,1.7,,USD,,,,,2.3
+ExpectedResults,Development,2,0,"EURUSD cross currency swap (fix fix) with 5y tenor where client pays EUR 6% coupon, receives USD 7.5%
+Both legs are semiannual and 30/360",,5,,,USD,6,30/360,,,7.5,,EUR,6,30/360,,,6
+ExpectedResults,Development,3,0,"I have trade details
+Profile: USD Interest rate swap
+Tenor: 10 years, both legs quarterly
+We pay USD fixed 3.35%, client pays SOFR",,10,,,USD,3,,,,3.35,,,3,,SOFR,,
+ExpectedResults,Development,4,0,"Sell SOFR swap at three point five percent, maturity November 18, 2027",2027-11-18,,,,,,,,,3.5,,,,,SOFR,,
+ExpectedResults,Development,8,0,"SOFR swap, we receive fixed, 10y tenor starting on Nov 19, 2024",2027-11-19,10,,,,,,SOFR,,,,,,,,,
+ExpectedResults,Development,9,0,"Vanilla swap at 2.90%, we pay fixed, 10y maturity",,10,,,,,,,,2.9,,,,,,,
+ExpectedResults,Development,11,0,"We receive 3.5 on 10-year swap, will pay SOFR plus twenty basis points, effective November 18, 2024",2027-11-18,10,,,,,,SOFR,20,,,,,,,,3.5
+ExpectedResults,Development,13,0,"Executed trade receiving 4.50% fixed vs 1-month SOFR on $100mm notional, 2-year tenor, starting December 20th, 2023",2023-12-20,2,100000000,,,,,1-month SOFR,,,100000000,,,,,,4.5
+ExpectedResults,Development,15,0,"Paying USD, receiving JPY, 2-year tenor, minus 32bps spread, ¥5bn notional",,2,5000000000,,USD,,,,-32,,5000000000,JPY,,,,,
+ExpectedResults,Development,18,0,"Executed 2-year basis swap
+Paying EUR, receiving USD minus 85 basis points
+100mm notional",,2,100000000,,EUR,,,,,,100000000,USD,,,,-85,

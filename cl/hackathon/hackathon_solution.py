@@ -114,23 +114,26 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
     def init(self) -> Self:
         """Similar to __init__ but can use fields set after construction, return self to enable method chaining."""
 
-        if "." not in self.solution_id:
+        is_resulting_solution = "." in self.solution_id
+        if not is_resulting_solution:
             if self.trial_count is None:
                 self.trial_count = str(10)
         else:
             self.inputs = self.get_inputs()
             self.outputs = self.get_outputs()
-            try:
-                self.retrievals = self.view_retrievals()
-            except Exception as e:
-                # Continue even if retrievals are not available
-                pass
 
         output_count = len(self.outputs) if self.outputs else None
         if output_count:
             completed_output_count = len([x for x in self.outputs if x.status == "Completed"])
             if output_count == completed_output_count:
                 self.status = "Completed"
+                try:
+                    if is_resulting_solution:
+                        self.retrievals = self.view_retrievals()
+                except Exception as e:
+                    # Continue even if retrievals are not available
+                    pass
+
             else:
                 pct_done = int(round(completed_output_count / output_count * 100, 0))
                 self.status = f"{pct_done}% Done"

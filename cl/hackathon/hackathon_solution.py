@@ -217,13 +217,15 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
             for x in inputs
             if x.trade_group == self.trade_group and ((trade_ids_list is None) or (int(x.trade_id) in trade_ids_list))
         ]
+        result = sorted(result, key=lambda x: int(x.trade_id))
         return result
 
     def get_outputs(self) -> List[HackathonOutput]:
         """Return the list of outputs (each with its score)."""
         outputs = Context.current().load_all(HackathonOutput)
-
-        return [x for x in outputs if x.solution.solution_id == self.solution_id]
+        result = [x for x in outputs if x.solution.solution_id == self.solution_id]
+        result = sorted(result, key=lambda x: int(x.trade_id))
+        return result
 
     @abstractmethod
     def score_output(self, output_: HackathonOutput) -> None:
@@ -584,9 +586,8 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
         num_fields = len(fields)
 
         row_labels = []
-
-        for i in range(num_trades):
-            row_labels += [f"Trade {i + 1}"] * num_fields
+        for x in inputs:
+            row_labels += [f"Trade {x.trade_id}"] * num_fields
 
         fields_labels = [CaseUtil.snake_to_title_case(file_name).replace("Leg ", "") for file_name in fields]
         col_labels = fields_labels * num_trades

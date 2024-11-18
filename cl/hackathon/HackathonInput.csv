@@ -5,35 +5,20 @@ Client pays: 6M Term SOFR, semi-annual, act/360
 Client receives: 3.45%, semi-annual, 30/360
 Start date: 10 November 2009
 Tenor: 5y"
-Drawing,3,"USDEUR cross currency swap (fixed/fixed), 10 y maturity
+Development,1,"USDEUR cross currency swap (fixed/fixed), 10 y maturity
 Client pays 2.3% USD, we pay 1.7% EUR"
-Drawing,4,"EURUSD cross currency swap (fix fix) with 5y tenor where client pays EUR 6% coupon, receives USD 7.5%
+Development,2,"EURUSD cross currency swap (fix fix) with 5y tenor where client pays EUR 6% coupon, receives USD 7.5%
 Both legs are semiannual and 30/360"
-Drawing,5,"I have trade details
+Development,3,"I have trade details
 Profile: USD Interest rate swap
 Tenor: 10 years, both legs quarterly
 We pay USD fixed 3.35%, client pays SOFR"
-Drawing,6,Sell 3y SOFR swap at three point five percent
-Drawing,7,"Sell ten year ESTR swap, we pay three and a half percent"
-Drawing,8,"We receive fixed on 10y swap at 3.1 percent, the index is three month term SOFR"
-Drawing,9,Client receives fixed on 10y ESTR swap
-Drawing,10,"SOFR swap, we receive fixed, 10y tenor"
-Drawing,11,"Vanilla swap at 2.90%, we pay fixed, 10y maturity"
-Drawing,12,Pay 5Y USD 100mm @ 4.25% vs 3M SOFR
-Drawing,13,"We receive 3.5 on 10-year swap, will pay SOFR plus twenty basis points"
-Drawing,14,Pay fixed on $500 million 7-year swap
-Drawing,15,"Executed trade receiving 4.50% fixed vs 1-month SOFR on $100mm notional, 2-year tenor, starting December 20th"
-Drawing,17,"USD 2-year swap, paying 4.355% fixed vs 3M SOFR, 500mm notional"
-Drawing,18,"Paying USD, receiving JPY, 2-year tenor, -32bps spread, ¥5bn notional"
-Drawing,19,"EUR/USD 5Y basis swap, pay 3M USD SOFR + 20 vs rcv 3M EURIBOR flat"
-Drawing,20,"Paying GBP, receiving USD
-2-year tenor at -11.5bps
-£500mm notional "
-Drawing,21,"Executed 2-year basis swap
+Development,4,"Sell SOFR swap at three point five percent, maturity November 18, 2027"
+Development,8,"SOFR swap, we receive fixed, 10y tenor starting on Nov 19, 2024"
+Development,9,"Vanilla swap at 2.90%, we pay fixed, 10y maturity"
+Development,11,"We receive 3.5 on 10-year swap, will pay SOFR plus twenty basis points, effective November 18, 2024"
+Development,13,"Executed trade receiving 4.50% fixed vs 1-month SOFR on $100mm notional, 2-year tenor, starting December 20th, 2023"
+Development,15,"Paying USD, receiving JPY, 2-year tenor, minus 32bps spread, ¥5bn notional"
+Development,18,"Executed 2-year basis swap
 Paying EUR, receiving USD minus 85 basis points
 100mm notional"
-Drawing,22,"We executed a 5-year vanilla IRS, paying fixed at 3.25% and receiving 3-month SOFR . The notional is $50 million, with quarterly resets on the floating leg. The fixed leg pays semi-annually."
-Drawing,23,"Tenor: 7 years
-Pay EUR fixed: 4.10%
-Receive SOFR + 50 bps
-Notional: €50 million for $54 million"

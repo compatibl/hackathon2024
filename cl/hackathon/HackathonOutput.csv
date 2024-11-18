@@ -18,7 +18,7 @@ ExpectedResults,Preview,7,0,"SOFR swap, we receive fixed, 10y tenor starting on 
 ExpectedResults,Preview,8,0,"Vanilla swap at 2.90%, we pay fixed, 10y maturity",,10,,,,,,,,2.9,,,,,,,
 ExpectedResults,Preview,9,0,"We receive 3.5 on 10-year swap, will pay SOFR plus twenty basis points, effective November 18, 2024",11/18/2027,10,,,,,,SOFR,20,,,,,,,,3.5
 ExpectedResults,Preview,10,0,"Executed trade receiving 4.50% fixed vs 1-month SOFR on $100mm notional, 2-year tenor, starting December 20th, 2023",12/20/2023,2,100000000,,,,,1-month SOFR,,,100000000,,,,,,4.5
-ExpectedResults,Preview,11,0,"Paying USD, receiving JPY, 2-year tenor, minus 32bps spread, ¥5bn notional",,2,5000000000,,USD,,,,-32,,5000000000,JPY,,,,,
+ExpectedResults,Preview,11,0,"Paying USD, receiving JPY, 2-year tenor, plus 32bps spread, ¥5bn notional",,2,5000000000,,USD,,,,32,,5000000000,JPY,,,,,
 ExpectedResults,Preview,12,0,"Executed 2-year basis swap
-Paying EUR, receiving USD minus 85 basis points
-100mm notional",,2,100000000,,EUR,,,,,,100000000,USD,,,,-85,
+Paying EUR, receiving USD plus 85 basis points
+100mm notional",,2,100000000,,EUR,,,,,,100000000,USD,,,,85,

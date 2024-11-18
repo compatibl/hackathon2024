@@ -1,0 +1,110 @@
+solution_id,trade_group,trade_ids,llm,prompt,llm_2,verification_prompt
+XPSolution1,Preview,,gpt-4o-02,"You will be provided with a trade entry and a list with parameter descriptions.
+Your task is try to find every parameter from the list and return it in the correct format specified in the parameter description.
+
+Every parameter description is a dictionary the parameter 'name' and 'description' keys.
+For every parameter in the list of parameter descriptions try to find this parameter in the trade entry.
+If you can not find the parameter then skip it.
+Otherwise extract the parameter by copying its value from the text.
+If side is specified without any qualifier (e.g. 'Sells' instead of 'Client sells'), it is the 'bank' side.
+Pay leg and receive leg are in our ('bank') perspective, NOT client.
+
+Don't add a currency unless explicitly included in the trade entry text.
+
+Unless otherwise indicated, 'selling' implies entering into a position where you are paying the fixed rate and receiving the floating rate.
+
+Parameter descriptions:
+'''
+[
+    {{
+        'name': 'effective_date',
+        'description': 'Effective date in ISO-8601 yyyy-mm-dd format (omit if not specified).'
+    }},
+    {{
+        'name': 'maturity_date',
+        'description': 'Maturity date in ISO-8601 yyyy-mm-dd string format (omit if not specified). Either supply this or tenor_years (but not both).'
+    }},
+    {{
+        'name': 'tenor_years',
+        'description': 'Tenor in whole years, for example 10 for a 10-year swap (omit if not specified). Either supply this or maturity_date (but not both).'
+    }},
+    {{
+        'name': 'pay_leg_notional',
+        'description': 'Pay leg notional amount, without currency.'
+    }},
+    {{
+        'name': 'pay_leg_ccy',
+        'description': 'Pay leg payment currency in 3-letter ISO-4217 format, for example USD, BRL, JPY, EUR, GBP'
+    }},
+    {{
+        'name': 'pay_leg_freq_months',
+        'description': 'Pay leg payment frequency in months, for example 3.'
+    }},
+    {{
+        'name': 'pay_leg_basis',
+        'description': 'Pay leg daycount basis as specified, for example act/360.'
+    }},
+    {{
+        'name': 'pay_leg_float_index',
+        'description': 'Pay leg floating interest rate index as specified, e.g., 3m Term SOFR (omit for a fixed leg). e.g. 6m LIBOR, 3m Term SOFR, SOFR, Treasury, EURIBOR, SONIA, CDI'
+    }},
+    {{
+        'name': 'pay_leg_float_spread_bp',
+        'description': 'Receive leg spread in basis points, for example 30 (omit for a fixed leg, 0 or omit if not specified).'
+    }},
+    {{
+        'name': 'pay_leg_fixed_rate_pct',
+        'description': 'Pay leg fixed rate in percent, for example 3.45 (omit for a floating leg).'
+    }},
+    {{
+        'name': 'rec_leg_notional',
+        'description': 'Receive leg notional amount, for example 10000000.'
+    }},
+    {{
+        'name': 'rec_leg_ccy',
+        'description': 'Receive leg payment currency in 3-letter ISO-4217 format, for example USD, BRL, JPY, EUR, GBP'
+    }},
+    {{
+        'name': 'rec_leg_freq_months',
+        'description': 'Pay leg payment frequency in months, for example 3.'
+    }},
+    {{
+        'name': 'rec_leg_basis',
+        'description': 'Pay leg daycount basis as specified, for example act/360.'
+    }},
+    {{
+        'name': 'rec_leg_float_index',
+        'description': 'Receive leg floating interest rate index as specified, e.g., 3m Term SOFR (omit for a fixed leg), e.g., 3m Term SOFR (omit for a fixed leg). e.g. 6m LIBOR, 3m Term SOFR, SOFR, Treasury, EURIBOR, SONIA, CDI'
+    }},
+    {{
+        'name': 'rec_leg_float_spread_bp',
+        'description': 'Receive leg spread in basis points, for example 30 (omit for a fixed leg, 0 or omit if not specified).'
+    }},
+    {{
+        'name': 'rec_leg_fixed_rate_pct',
+        'description': 'Receive leg fixed rate in percent (omit for a floating leg).'
+    }}
+]
+'''
+
+Trade entry:
+'''
+{input_text}
+'''
+
+Return the output in specified JSON format
+{{
+  <parameter_name>: <parameter_value>
+}}",llama-v3-70b-instruct-02,"These fields were extracted from the following trade entry text:
+
+Trade entry:
+'''
+{input_text}
+'''
+
+Extracted fields:
+'''
+{field_list}
+'''
+
+Output JSON with the same field names and the preferred value from the original trade entry input."

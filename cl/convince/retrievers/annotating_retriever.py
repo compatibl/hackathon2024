@@ -15,6 +15,8 @@
 import re
 from dataclasses import dataclass
 from typing import List
+
+from markdown_it.common.html_re import attribute
 from typing_extensions import Self
 from cl.runtime import Context
 from cl.runtime.experiments.trial_key import TrialKey
@@ -61,11 +63,16 @@ Parameter description: ```{ParamDescription}```
 class AnnotatingRetriever(Retriever):
     """Instructs the model to surround the requested parameter by curly braces and uses the annotations to retrieve."""
 
+    MAX_CALLS = 50
+
     prompt: PromptKey = missing()
     """Prompt used to perform the retrieval."""
 
     max_retries: int = missing()
     """How many times to retry the annotation in case changes other than braces are detected."""
+
+    call_count: int = 0
+    """How many times the LLM has been called"""
 
     def init(self) -> Self:
         """Similar to __init__ but can use fields set after construction, return self to enable method chaining."""
@@ -80,8 +87,15 @@ class AnnotatingRetriever(Retriever):
         if self.max_retries is None:
             self.max_retries = 1
 
+        self.call_count = 0
+
         # Return self to enable method chaining
         return self
+
+    @property
+    def calls_remaining(self) -> int:
+        """number of calls remaining"""
+        return self.MAX_CALLS - self.call_count
 
     def retrieve(
         self,
@@ -91,6 +105,7 @@ class AnnotatingRetriever(Retriever):
         is_required: bool = False,  # TODO: Make this parameter required
         param_samples: List[str] | None = None,
     ) -> str | None:
+        self.call_count += 1
 
         # Load the full LLM specified by the context
         context = Context.current()

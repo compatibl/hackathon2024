@@ -25,7 +25,7 @@ from cl.hackathon.hackathon_solution import HackathonSolution
 class ExpectedResults(HackathonSolution):
     """Solution key under which the expected (correct) outputs are recorded."""
 
-    def score_output(self, output_: HackathonOutput) -> None:
+    def generate_output(self, output_: HackathonOutput) -> None:
         """Run scoring on the output."""
         raise UserError(
             "Solution ExpectedResults is used only to hold the expected results for "

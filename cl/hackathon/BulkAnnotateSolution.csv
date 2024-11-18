@@ -101,16 +101,5 @@ Sell <tenor_years>2y</tenor_years> <pay_leg_float_index>SOFR</pay_leg_float_inde
 
 You must not change the text between the tags.
 Do not reformat dates, fix typos or change any of the words in any way.
-
-Do not tag more than is needed, for example:
-Tenor: 5 years
-Becomes
-Tenor: <tenor_years>5</tenor_years> years
-
-Pay close attention to trade direction. We are always taking the role of the BANK.
-This means that if the Client Pays, We receive. For example:
-Client Pays 3% Client Receives 3.5%
-Becomes:
-Client Pays <rec_leg_fixed_rate_pct>3%</rec_leg_fixed_rate_pct> Client Receives <pay_leg_fixed_rate_pct>3.5%</pay_leg_fixed_rate_pct.
 "
 

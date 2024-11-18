@@ -100,7 +100,7 @@ class BulkAnnotateSolution(HackathonSolution):
         entry_dict["float_index"] = extracted_results.get(leg_type + "_leg_float_index", None)
 
         # Floating rate spread
-        extracted_float_spread = extracted_results.get(leg_type + "_leg_float_spread", None)
+        extracted_float_spread = extracted_results.get(leg_type + "_leg_float_spread_bp", None)
         if extracted_float_spread is not None:
             try:
                 if v:= maybe_convert(extracted_float_spread).isnumeric():
@@ -279,8 +279,12 @@ class BulkAnnotateSolution(HackathonSolution):
 
                 found = {}
                 for k, v in asdict(output_).items():
-                    if k in extracted_results and v and ("error" not in v.lower()):
-                        found[k] = v
+                    if k in extracted_results:
+                        if v is not None:
+                            if not isinstance(v, str):
+                                found[k] = v
+                            elif "error" not in v.lower():
+                                found[k] = v
 
                 retry = {}
                 for k, v in extracted_results.items():
@@ -316,8 +320,7 @@ class BulkAnnotateSolution(HackathonSolution):
 
         if "pay_leg_notional" not in found_dict:
             output_.pay_leg_notional = pay_leg_parameters.get("notional_amount")
-        if "pay_leg_ccy" not in found_dict:
-            output_.pay_leg_ccy = pay_leg_parameters.get("notional_currency")
+
         if "pay_leg_basis" not in found_dict:
             output_.pay_leg_basis = pay_leg_parameters.get("basis")
         if "pay_leg_freq_months" not in found_dict:
@@ -340,8 +343,7 @@ class BulkAnnotateSolution(HackathonSolution):
         rec_leg_parameters = self._leg_entry_to_dict(extracted_results, output_.entry_text, leg_type)
         if "rec_leg_notional" not in found_dict:
             output_.rec_leg_notional = rec_leg_parameters.get("notional_amount")
-        if "rec_leg_ccy" not in found_dict:
-            output_.rec_leg_ccy = rec_leg_parameters.get("notional_currency")
+
         if "rec_leg_basis" not in found_dict:
             output_.rec_leg_basis = rec_leg_parameters.get("basis")
         if "rec_leg_freq_months" not in found_dict:
@@ -356,9 +358,16 @@ class BulkAnnotateSolution(HackathonSolution):
             output_.rec_leg_ccy = rec_leg_parameters.get("currency")
 
         # post processing:
-        if "rec_leg_notional" not in found_dict:
-            if output_.pay_leg_notional and not output_.rec_leg_notional:
-                output_.rec_leg_notional = output_.pay_leg_notional
         if "pay_leg_notional" not in found_dict:
+            if output_.pay_leg_notional and not output_.rec_leg_freq_months:
+                output_.rec_leg_notional = output_.pay_leg_notional
+
             if output_.rec_leg_notional and not output_.pay_leg_notional:
                 output_.pay_leg_notional = output_.rec_leg_notional
+
+        # if "pay_leg_freq_months" not in found_dict:
+        #     if output_.pay_leg_freq_months and not output_.rec_leg_freq_months:
+        #         output_.rec_leg_notional = output_.pay_leg_freq_months
+        #
+        #     if output_.rec_leg_freq_months and not output_.pay_leg_freq_months:
+        #         output_.pay_leg_freq_months = output_.rec_leg_freq_months

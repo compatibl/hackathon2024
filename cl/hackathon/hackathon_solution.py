@@ -14,6 +14,7 @@
 
 import copy
 import dataclasses
+import time
 from abc import ABC
 from abc import abstractmethod
 from collections import Counter
@@ -346,12 +347,23 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
                 scored_solution.submit_trial_output(trade_id=input_.trade_id, trial_id=str(trial_index))
 
         # Compare solution outputs with expected outputs and save HackathonScoreItems for each pair
-        scored_solution.status = "Analyzing"
-        Context.current().save_one(scored_solution)
-        scored_solution.calculate()
+        #scored_solution.status = "Analyzing"
+        #Context.current().save_one(scored_solution)
+        # scored_solution.calculate()
 
         # Save scoring object with total score
+        scored_solution.status = "Completed"
         context.save_one(scored_solution)
+
+    def run_analyze(self):
+        # Compare solution outputs with expected outputs and save HackathonScoreItems for each pair
+        self.status = "Analyzing"
+        Context.current().save_one(self)
+        self.calculate()
+
+        # Save scoring object with total score
+        self.status = "Completed"
+        Context.current().save_one(self)
 
     def get_score_item(
         self, input_key: HackathonInputKey, actual_output: HackathonOutput, expected_output: HackathonOutput
@@ -442,7 +454,11 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
                     trade_id=input_.trade_id,
                     trial_id=trial_id,
                 )
+
                 actual_output = context.load_one(HackathonOutput, actual_output_key)
+                #while actual_output.status != "Completed":
+                #    time.sleep(1)
+                 #   actual_output = context.load_one(HackathonOutput, actual_output_key)
 
                 # Create a scoring item by comparing actual and expected outputs
                 score_item = self.get_score_item(input_key, actual_output, expected_output)
@@ -497,7 +513,7 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
         scoring_items = context.load_all(HackathonScoreItem)
         filtered_scoring_items = [item for item in scoring_items if item.solution == self.get_key()]
         if len(filtered_scoring_items) == 0:
-            raise UserError("Heatmap will be generated when at least one trial is completed for all trades.")
+            raise UserError("Heatmap will be generated after running Analyze.")
 
         first_item = filtered_scoring_items[0]
         fields = (

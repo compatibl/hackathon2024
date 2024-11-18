@@ -114,23 +114,26 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
     def init(self) -> Self:
         """Similar to __init__ but can use fields set after construction, return self to enable method chaining."""
 
-        if "." not in self.solution_id:
+        is_resulting_solution = "." in self.solution_id
+        if not is_resulting_solution:
             if self.trial_count is None:
                 self.trial_count = str(10)
         else:
             self.inputs = self.get_inputs()
             self.outputs = self.get_outputs()
-            try:
-                self.retrievals = self.view_retrievals()
-            except Exception as e:
-                # Continue even if retrievals are not available
-                pass
 
         output_count = len(self.outputs) if self.outputs else None
         if output_count:
             completed_output_count = len([x for x in self.outputs if x.status == "Completed"])
             if output_count == completed_output_count:
                 self.status = "Completed"
+                # try:
+                #     if is_resulting_solution:
+                #         self.retrievals = self.view_retrievals()
+                # except Exception as e:
+                #     # Continue even if retrievals are not available
+                #     pass
+
             else:
                 pct_done = int(round(completed_output_count / output_count * 100, 0))
                 self.status = f"{pct_done}% Done"
@@ -380,7 +383,7 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
 
         # Iterate over expected output fields and compare values
         for field_name in [
-            f for f in expected_output_fields if f not in expected_output_key_fields and f != "entry_text"
+            f for f in expected_output_fields if f not in expected_output_key_fields and f not in ("entry_text", "status")
         ]:
 
             expected_field_value = getattr(expected_output, field_name, None)
@@ -486,18 +489,44 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
 
     @staticmethod
     def _compare_as_dates(source_date_text: str, target_date_text: str) -> bool:
-        source_date_entry = DateEntry(text=source_date_text)
-        source_date_entry.run_generate()
-        target_date_entry = DateEntry(text=target_date_text)
-        target_date_entry.run_generate()
+        try:
+            if source_date_text.strip() == target_date_text.strip():
+                return True
+            source_date_entry = DateEntry(text=source_date_text, locale="en-US")
+            source_date_entry.run_generate()
+            target_date_entry = DateEntry(text=target_date_text, locale="en-US")
+            target_date_entry.run_generate()
+        except Exception as e:
+            Context.current().save_one(
+                LogMessage(
+                    level="Info",
+                    message=f"An error during {source_date_text} "
+                            f"vs. {target_date_text} date comparison in scoring.\n{str(e)}"
+                )
+            )
+            # False if cannot parse as a date
+            return False
         return source_date_entry.date == target_date_entry.date
 
     @staticmethod
     def _compare_as_numbers(source_number_text: str, target_number_text: str) -> bool:
-        source_number_entry = NumberEntry(text=source_number_text)
-        source_number_entry.run_generate()
-        target_number_entry = NumberEntry(text=target_number_text)
-        target_number_entry.run_generate()
+        try:
+            if source_number_text.strip() == target_number_text.strip():
+                return True
+            source_number_entry = NumberEntry(text=source_number_text, locale="en-US")
+            source_number_entry.run_generate()
+            target_number_entry = NumberEntry(text=target_number_text, locale="en-US")
+            target_number_entry.run_generate()
+        except Exception as e:
+            Context.current().save_one(
+                LogMessage(
+                    level="Info",
+                    message=f"An error during {source_number_text} "
+                            f"vs. {target_number_text} number comparison in scoring.\n{str(e)}"
+                )
+            )
+            # False if cannot parse as a date
+            return False
         return source_number_entry.value == target_number_entry.value
 
     def view_heatmap(self) -> View | None:
@@ -636,4 +665,5 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
             context.save_one(statistics)
             all_statistics.append(statistics)
 
+        all_statistics = sorted(all_statistics, key=lambda x: int(x.trade_id))
         self.statistics = all_statistics

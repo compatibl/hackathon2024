@@ -489,17 +489,17 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
 
     @staticmethod
     def _compare_as_dates(source_date_text: str, target_date_text: str) -> bool:
-        source_date_entry = DateEntry(text=source_date_text)
+        source_date_entry = DateEntry(text=source_date_text, locale="en-US")
         source_date_entry.run_generate()
-        target_date_entry = DateEntry(text=target_date_text)
+        target_date_entry = DateEntry(text=target_date_text, locale="en-US")
         target_date_entry.run_generate()
         return source_date_entry.date == target_date_entry.date
 
     @staticmethod
     def _compare_as_numbers(source_number_text: str, target_number_text: str) -> bool:
-        source_number_entry = NumberEntry(text=source_number_text)
+        source_number_entry = NumberEntry(text=source_number_text, locale="en-US")
         source_number_entry.run_generate()
-        target_number_entry = NumberEntry(text=target_number_text)
+        target_number_entry = NumberEntry(text=target_number_text, locale="en-US")
         target_number_entry.run_generate()
         return source_number_entry.value == target_number_entry.value
 

@@ -8,7 +8,7 @@ import re
 
 def re2dict(m, start=None):
     offset = start["start"] if start else 0
-    if re is None:
+    if m is None:
         return {}
     out = {
         "tag": m.group("tag"),
@@ -19,8 +19,8 @@ def re2dict(m, start=None):
 
 
 def find_tags(original, tagged):
-    tag_start = r"<(?P<tag>[a-z0-9]+?)>"
-    tag_end = r"</(?P<tag>[a-z0-9]+?)>"
+    tag_start = r"<(?P<tag>[^/]+?)>"
+    tag_end = r"</(?P<tag>.+?)>"
     tag_end_f = r"</(?P<tag>{tag})>"
 
     tag_starts = []

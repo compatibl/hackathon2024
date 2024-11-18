@@ -1665,3 +1665,439 @@ Examples:
     ""justification"": ""The input text 'd'euros' refers to euros, and the ISO-4217 currency code for Euros is 'EUR', which is one of the valid choices.""
 }
 ```"
+2024-11-18-11-49-56-762-75c0ac261c60d600f20a,"TrialID: 0
+You will be provided with a trade entry and a list with parameter descriptions.
+Your task is try to find every parameter from the list and return it in the correct format specified in the parameter description.
+
+Every parameter description is a dictionary the parameter 'name' and 'description' keys.
+For every parameter in the list of parameter descriptions try to find this parameter in the trade entry.
+If you can not find the parameter then skip it.
+Otherwise extract the parameter by copying its value form the text.
+
+Parameter descriptions:
+'''
+[
+    {
+        'name': 'effective_date',
+        'description': 'Effective date in ISO-8601 yyyy-mm-dd format (omit if not specified).'
+    },
+    {
+        'name': 'maturity_date',
+        'description': 'Maturity date in ISO-8601 yyyy-mm-dd string format (omit if not specified).'
+    },
+    {
+        'name': 'tenor_years',
+        'description': 'Tenor in whole years, for example 10 for a 10-year swap (omit if not specified).'
+    },
+    {
+        'name': 'pay_leg_notional',
+        'description': 'Pay leg notional amount, without currency.'
+    },
+    {
+        'name': 'pay_leg_ccy',
+        'description': 'Pay leg payment currency in 3-letter ISO-4217 format, for example USD.'
+    },
+    {
+        'name': 'pay_leg_freq_months',
+        'description': 'Pay leg payment frequency in months, for example 3.'
+    },
+    {
+        'name': 'pay_leg_basis',
+        'description': 'Pay leg daycount basis as specified, for example act/360.'
+    },
+    {
+        'name': 'pay_leg_float_index',
+        'description': 'Pay leg floating interest rate index as specified, e.g., 3m Term SOFR (omit for a fixed leg).'
+    },
+    {
+        'name': 'pay_leg_float_spread_bp',
+        'description': 'Receive leg spread in basis points, for example 30 (omit for a fixed leg, 0 or omit if not specified).'
+    },
+    {
+        'name': 'pay_leg_fixed_rate_pct',
+        'description': 'Pay leg fixed rate in percent, for example 3.45 (omit for a floating leg).'
+    },
+    {
+        'name': 'rec_leg_notional',
+        'description': 'Receive leg notional amount, for example 10000000.'
+    },
+    {
+        'name': 'rec_leg_ccy',
+        'description': 'Receive leg payment currency in 3-letter ISO-4217 format, for example USD.'
+    },
+    {
+        'name': 'rec_leg_freq_months',
+        'description': 'Pay leg payment frequency in months, for example 3.'
+    },
+    {
+        'name': 'rec_leg_basis',
+        'description': 'Pay leg daycount basis as specified, for example act/360.'
+    },
+    {
+        'name': 'rec_leg_float_index',
+        'description': 'Receive leg floating interest rate index as specified, e.g., 3m Term SOFR (omit for a fixed leg).'
+    },
+    {
+        'name': 'rec_leg_float_spread_bp',
+        'description': 'Receive leg spread in basis points, for example 30 (omit for a fixed leg, 0 or omit if not specified).'
+    },
+    {
+        'name': 'rec_leg_fixed_rate_pct',
+        'description': 'Receive leg fixed rate in percent (omit for a floating leg).'
+    }
+]
+'''
+
+Trade entry:
+'''
+Sell 10y SOFR swap at 3.45%
+'''
+
+You must return the original trade entry with the addition of xml like annotations.
+The annotations should use the filed names above.
+Not all fields will be present.
+
+For example:
+Sell 2y SOFR swap at 2.5%
+Becomes:
+Sell <tenor_years>2y</tenor_years> <rec_leg_float_index>SOFR</rec_leg_float_index> swap at <pay_leg_fixed_rate_pct>2.5%</pay_leg_fixed_rate_pct>","```plaintext
+Sell <tenor_years>10y</tenor_years> SOFR swap at <pay_leg_fixed_rate_pct>3.45%</pay_leg_fixed_rate_pct>
+```"
+2024-11-18-11-49-58-128-74c1ba1e6cde3617fa4f,"TrialID: 0
+You will be provided with a trade entry and a list with parameter descriptions.
+Your task is try to find every parameter from the list and return it in the correct format specified in the parameter description.
+
+Every parameter description is a dictionary the parameter 'name' and 'description' keys.
+For every parameter in the list of parameter descriptions try to find this parameter in the trade entry.
+If you can not find the parameter then skip it.
+Otherwise extract the parameter by copying its value form the text.
+
+Parameter descriptions:
+'''
+[
+    {
+        'name': 'effective_date',
+        'description': 'Effective date in ISO-8601 yyyy-mm-dd format (omit if not specified).'
+    },
+    {
+        'name': 'maturity_date',
+        'description': 'Maturity date in ISO-8601 yyyy-mm-dd string format (omit if not specified).'
+    },
+    {
+        'name': 'tenor_years',
+        'description': 'Tenor in whole years, for example 10 for a 10-year swap (omit if not specified).'
+    },
+    {
+        'name': 'pay_leg_notional',
+        'description': 'Pay leg notional amount, without currency.'
+    },
+    {
+        'name': 'pay_leg_ccy',
+        'description': 'Pay leg payment currency in 3-letter ISO-4217 format, for example USD.'
+    },
+    {
+        'name': 'pay_leg_freq_months',
+        'description': 'Pay leg payment frequency in months, for example 3.'
+    },
+    {
+        'name': 'pay_leg_basis',
+        'description': 'Pay leg daycount basis as specified, for example act/360.'
+    },
+    {
+        'name': 'pay_leg_float_index',
+        'description': 'Pay leg floating interest rate index as specified, e.g., 3m Term SOFR (omit for a fixed leg).'
+    },
+    {
+        'name': 'pay_leg_float_spread_bp',
+        'description': 'Receive leg spread in basis points, for example 30 (omit for a fixed leg, 0 or omit if not specified).'
+    },
+    {
+        'name': 'pay_leg_fixed_rate_pct',
+        'description': 'Pay leg fixed rate in percent, for example 3.45 (omit for a floating leg).'
+    },
+    {
+        'name': 'rec_leg_notional',
+        'description': 'Receive leg notional amount, for example 10000000.'
+    },
+    {
+        'name': 'rec_leg_ccy',
+        'description': 'Receive leg payment currency in 3-letter ISO-4217 format, for example USD.'
+    },
+    {
+        'name': 'rec_leg_freq_months',
+        'description': 'Pay leg payment frequency in months, for example 3.'
+    },
+    {
+        'name': 'rec_leg_basis',
+        'description': 'Pay leg daycount basis as specified, for example act/360.'
+    },
+    {
+        'name': 'rec_leg_float_index',
+        'description': 'Receive leg floating interest rate index as specified, e.g., 3m Term SOFR (omit for a fixed leg).'
+    },
+    {
+        'name': 'rec_leg_float_spread_bp',
+        'description': 'Receive leg spread in basis points, for example 30 (omit for a fixed leg, 0 or omit if not specified).'
+    },
+    {
+        'name': 'rec_leg_fixed_rate_pct',
+        'description': 'Receive leg fixed rate in percent (omit for a floating leg).'
+    }
+]
+'''
+
+Trade entry:
+'''
+Notional: 10m
+Client pays: 6M Term SOFR, semi-annual, act/360
+Client receives: 3.45%, semi-annual, 30/360
+Start date: 10 November 2009
+Tenor: 5y
+'''
+
+You must return the original trade entry with the addition of xml like annotations.
+The annotations should use the filed names above.
+Not all fields will be present.
+
+For example:
+Sell 2y SOFR swap at 2.5%
+Becomes:
+Sell <tenor_years>2y</tenor_years> <rec_leg_float_index>SOFR</rec_leg_float_index> swap at <pay_leg_fixed_rate_pct>2.5%</pay_leg_fixed_rate_pct>","```xml
+Notional: <pay_leg_notional>10m</pay_leg_notional>
+Client pays: <pay_leg_float_index>6M Term SOFR</pay_leg_float_index>, <pay_leg_freq_months>6</pay_leg_freq_months>, <pay_leg_basis>act/360</pay_leg_basis>
+Client receives: <rec_leg_fixed_rate_pct>3.45%</rec_leg_fixed_rate_pct>, <rec_leg_freq_months>6</rec_leg_freq_months>, <rec_leg_basis>30/360</rec_leg_basis>
+Start date: <effective_date>2009-11-10</effective_date>
+<tenor_years>5</tenor_years>
+```"
+2024-11-18-12-28-53-774-7432832e2429870f9593,"TrialID: 0
+You will be provided with a trade entry and a list with parameter descriptions.
+Your task is try to find every parameter from the list and return it in the correct format specified in the parameter description.
+
+Every parameter description is a dictionary the parameter 'name' and 'description' keys.
+For every parameter in the list of parameter descriptions try to find this parameter in the trade entry.
+If you can not find the parameter then skip it.
+Otherwise extract the parameter by copying its value form the text.
+
+Parameter descriptions:
+'''
+[
+    {
+        'name': 'effective_date',
+        'description': 'Effective date in ISO-8601 yyyy-mm-dd format (omit if not specified).'
+    },
+    {
+        'name': 'maturity_date',
+        'description': 'Maturity date in ISO-8601 yyyy-mm-dd string format (omit if not specified).'
+    },
+    {
+        'name': 'tenor_years',
+        'description': 'Tenor in whole years, for example 10 for a 10-year swap (omit if not specified).'
+    },
+    {
+        'name': 'pay_leg_notional',
+        'description': 'Pay leg notional amount, without currency.'
+    },
+    {
+        'name': 'pay_leg_ccy',
+        'description': 'Pay leg payment currency in 3-letter ISO-4217 format, for example USD.'
+    },
+    {
+        'name': 'pay_leg_freq_months',
+        'description': 'Pay leg payment frequency in months, for example 3.'
+    },
+    {
+        'name': 'pay_leg_basis',
+        'description': 'Pay leg daycount basis as specified, for example act/360.'
+    },
+    {
+        'name': 'pay_leg_float_index',
+        'description': 'Pay leg floating interest rate index as specified, e.g., 3m Term SOFR (omit for a fixed leg).'
+    },
+    {
+        'name': 'pay_leg_float_spread_bp',
+        'description': 'Receive leg spread in basis points, for example 30 (omit for a fixed leg, 0 or omit if not specified).'
+    },
+    {
+        'name': 'pay_leg_fixed_rate_pct',
+        'description': 'Pay leg fixed rate in percent, for example 3.45 (omit for a floating leg).'
+    },
+    {
+        'name': 'rec_leg_notional',
+        'description': 'Receive leg notional amount, for example 10000000.'
+    },
+    {
+        'name': 'rec_leg_ccy',
+        'description': 'Receive leg payment currency in 3-letter ISO-4217 format, for example USD.'
+    },
+    {
+        'name': 'rec_leg_freq_months',
+        'description': 'Pay leg payment frequency in months, for example 3.'
+    },
+    {
+        'name': 'rec_leg_basis',
+        'description': 'Pay leg daycount basis as specified, for example act/360.'
+    },
+    {
+        'name': 'rec_leg_float_index',
+        'description': 'Receive leg floating interest rate index as specified, e.g., 3m Term SOFR (omit for a fixed leg).'
+    },
+    {
+        'name': 'rec_leg_float_spread_bp',
+        'description': 'Receive leg spread in basis points, for example 30 (omit for a fixed leg, 0 or omit if not specified).'
+    },
+    {
+        'name': 'rec_leg_fixed_rate_pct',
+        'description': 'Receive leg fixed rate in percent (omit for a floating leg).'
+    }
+]
+'''
+
+Trade entry:
+'''
+Sell 10y SOFR swap at 3.45%
+'''
+
+Return the output in specified JSON format
+{
+  <parameter_name>: <parameter_value>
+}","```json
+{
+  ""tenor_years"": 10,
+  ""pay_leg_fixed_rate_pct"": 3.45
+}
+```"
+2024-11-18-12-28-54-700-7dc2a734865a30c55a38,"TrialID: 0
+You will be provided with a trade entry and a list with parameter descriptions.
+Your task is try to find every parameter from the list and return it in the correct format specified in the parameter description.
+
+Every parameter description is a dictionary the parameter 'name' and 'description' keys.
+For every parameter in the list of parameter descriptions try to find this parameter in the trade entry.
+If you can not find the parameter then skip it.
+Otherwise extract the parameter by copying its value form the text.
+
+Parameter descriptions:
+'''
+[
+    {
+        'name': 'effective_date',
+        'description': 'Effective date in ISO-8601 yyyy-mm-dd format (omit if not specified).'
+    },
+    {
+        'name': 'maturity_date',
+        'description': 'Maturity date in ISO-8601 yyyy-mm-dd string format (omit if not specified).'
+    },
+    {
+        'name': 'tenor_years',
+        'description': 'Tenor in whole years, for example 10 for a 10-year swap (omit if not specified).'
+    },
+    {
+        'name': 'pay_leg_notional',
+        'description': 'Pay leg notional amount, without currency.'
+    },
+    {
+        'name': 'pay_leg_ccy',
+        'description': 'Pay leg payment currency in 3-letter ISO-4217 format, for example USD.'
+    },
+    {
+        'name': 'pay_leg_freq_months',
+        'description': 'Pay leg payment frequency in months, for example 3.'
+    },
+    {
+        'name': 'pay_leg_basis',
+        'description': 'Pay leg daycount basis as specified, for example act/360.'
+    },
+    {
+        'name': 'pay_leg_float_index',
+        'description': 'Pay leg floating interest rate index as specified, e.g., 3m Term SOFR (omit for a fixed leg).'
+    },
+    {
+        'name': 'pay_leg_float_spread_bp',
+        'description': 'Receive leg spread in basis points, for example 30 (omit for a fixed leg, 0 or omit if not specified).'
+    },
+    {
+        'name': 'pay_leg_fixed_rate_pct',
+        'description': 'Pay leg fixed rate in percent, for example 3.45 (omit for a floating leg).'
+    },
+    {
+        'name': 'rec_leg_notional',
+        'description': 'Receive leg notional amount, for example 10000000.'
+    },
+    {
+        'name': 'rec_leg_ccy',
+        'description': 'Receive leg payment currency in 3-letter ISO-4217 format, for example USD.'
+    },
+    {
+        'name': 'rec_leg_freq_months',
+        'description': 'Pay leg payment frequency in months, for example 3.'
+    },
+    {
+        'name': 'rec_leg_basis',
+        'description': 'Pay leg daycount basis as specified, for example act/360.'
+    },
+    {
+        'name': 'rec_leg_float_index',
+        'description': 'Receive leg floating interest rate index as specified, e.g., 3m Term SOFR (omit for a fixed leg).'
+    },
+    {
+        'name': 'rec_leg_float_spread_bp',
+        'description': 'Receive leg spread in basis points, for example 30 (omit for a fixed leg, 0 or omit if not specified).'
+    },
+    {
+        'name': 'rec_leg_fixed_rate_pct',
+        'description': 'Receive leg fixed rate in percent (omit for a floating leg).'
+    }
+]
+'''
+
+Trade entry:
+'''
+Notional: 10m
+Client pays: 6M Term SOFR, semi-annual, act/360
+Client receives: 3.45%, semi-annual, 30/360
+Start date: 10 November 2009
+Tenor: 5y
+'''
+
+Return the output in specified JSON format
+{
+  <parameter_name>: <parameter_value>
+}","To extract the parameters from the trade entry based on the provided descriptions, let's analyze the details in the trade entry:
+
+- **Notional**: 10m  
+- **Client pays**: 6M Term SOFR, semi-annual, act/360  
+- **Client receives**: 3.45%, semi-annual, 30/360  
+- **Start date**: 10 November 2009  
+- **Tenor**: 5y  
+
+From this, we can identify the following parameters:
+
+1. **effective_date**: ""Start date: 10 November 2009"" translates to 2009-11-10 in ISO format.
+2. **tenor_years**: ""Tenor: 5y"" indicates a tenor of 5 years.
+3. **pay_leg_notional** and **rec_leg_notional**: The notional is typically the same for pay and receive legs unless otherwise specified. ""Notional: 10m"" means 10000000.
+4. **pay_leg_float_index**: ""Client pays: 6M Term SOFR"" indicates the pay leg is floating with index ""6M Term SOFR"".
+5. **pay_leg_freq_months**: ""semi-annual"" implies a payment frequency of 6 months.
+6. **pay_leg_basis**: ""act/360"" is the daycount basis for the pay leg.
+7. **pay_leg_float_spread_bp**: The pay leg is floating based on ""6M Term SOFR"", and there is no specified spread, implying it is ""0"" or omitted.
+8. **rec_leg_fixed_rate_pct**: ""Client receives: 3.45%"" directly states the fixed rate.
+9. **rec_leg_freq_months**: ""semi-annual"" also refers to the receive leg, implying a 6-month frequency.
+10. **rec_leg_basis**: ""30/360"" is the daycount basis for the receive leg.
+11. **rec_leg_ccy** and **pay_leg_ccy**: The currency isn't specified in the trade entry, so leave these out.
+
+Given these identifications, the JSON output format should be:
+
+```json
+{
+  ""effective_date"": ""2009-11-10"",
+  ""tenor_years"": 5,
+  ""pay_leg_notional"": 10000000,
+  ""rec_leg_notional"": 10000000,
+  ""pay_leg_freq_months"": 6,
+  ""pay_leg_basis"": ""act/360"",
+  ""pay_leg_float_index"": ""6M Term SOFR"",
+  ""rec_leg_fixed_rate_pct"": 3.45,
+  ""rec_leg_freq_months"": 6,
+  ""rec_leg_basis"": ""30/360""
+}
+```
+
+Parameters not mentioned in the trade entry (such as maturity date, currencies) or with no additional details specified are omitted as instructed."

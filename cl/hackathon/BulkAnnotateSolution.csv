@@ -1,5 +1,5 @@
 ﻿solution_id,trade_group,trade_ids,llm,prompt
-GptBulkAnnotate,Preview,,gpt-4o,"You will be provided with a trade entry and a list with parameter descriptions.
+GptBulkAnnotate,Preview,,gpt-4o-02,"You will be provided with a trade entry and a list with parameter descriptions.
 Your task is try to find every parameter from the list and return it in the correct format specified in the parameter description.
 
 Every parameter description is a dictionary the parameter 'name' and 'description' keys.
@@ -86,10 +86,19 @@ Trade entry:
 {input_text}
 '''
 
-Return the output in specified JSON format
-{{
-  <parameter_name>: <parameter_value>
-}}"
+You must return the original trade entry text with the addition of xml like annotations.
+The annotations should use the filed names above.
+Not all fields will be present.
+
+For example:
+Sell 2y SOFR swap at 2.5%
+Becomes:
+Sell <tenor_years>2y</tenor_years> <rec_leg_float_index>SOFR</rec_leg_float_index> swap at <pay_leg_fixed_rate_pct>2.5%</pay_leg_fixed_rate_pct>
+
+You must not change the text between the tags.
+Do not reformat dates, fix typos or change any of the words in any way.
+
+"
 LlamaBulkAnnotate,Preview,,llama-v3-70b-instruct,"You will be provided with a trade entry and a list with parameter descriptions.
 Your task is try to find every parameter from the list and return it in the correct format specified in the parameter description.
 
@@ -177,7 +186,15 @@ Trade entry:
 {input_text}
 '''
 
-Return the output in specified JSON format
-{{
-  <parameter_name>: <parameter_value>
-}}"
+You must return the original trade entry text with the addition of xml like annotations.
+The annotations should use the filed names above.
+Not all fields will be present.
+
+For example:
+Sell 2y SOFR swap at 2.5%
+Becomes:
+Sell <tenor_years>2y</tenor_years> <rec_leg_float_index>SOFR</rec_leg_float_index> swap at <pay_leg_fixed_rate_pct>2.5%</pay_leg_fixed_rate_pct>
+
+You must not change the text between the tags.
+Do not reformat dates, fix typos or change any of the words in any way.
+"

@@ -15,6 +15,7 @@
 from dataclasses import dataclass
 from typing import Dict
 
+from cl.convince.retrievers.retriever_util import RetrieverUtil
 from cl.runtime import Context
 from cl.runtime.experiments.trial_key import TrialKey
 from cl.runtime.log.exceptions.user_error import UserError
@@ -135,7 +136,7 @@ class BulkAnnotateSolution(HackathonSolution):
                 )
 
         # Fixed Rate
-        extracted_fixed_rate = extracted_results.get(leg_type + "_fixed_rate_pct", None)
+        extracted_fixed_rate = extracted_results.get(leg_type + "_leg_fixed_rate_pct", None)
         if extracted_fixed_rate is not None:
             try:
                 fixed_rate = NumberEntry(text=extracted_fixed_rate)
@@ -176,8 +177,21 @@ class BulkAnnotateSolution(HackathonSolution):
                 formatted_error_message = entry_error_message_template.format(
                     extracted_field=extracted_maturity, exception_message=str(e)
                 )
-
                 trade_parameters["maturity_date"] = formatted_error_message
+
+
+        # tenor
+        extracted_tenor = extracted_results.get("tenor_years", None)
+        if extracted_tenor is not None:
+            try:
+                tenor = DateOrTenorEntry(text=extracted_tenor)
+                tenor.run_generate()
+                if years := tenor.years:
+                    trade_parameters["tenor_years"] = str(FloatUtil.to_int_or_float(years))
+            except Exception as e:
+                formatted_error_message = entry_error_message_template.format(
+                    extracted_field=extracted_maturity, exception_message=str(e)
+                )
                 trade_parameters["tenor_years"] = formatted_error_message
 
         # Effective date
@@ -196,22 +210,64 @@ class BulkAnnotateSolution(HackathonSolution):
         return trade_parameters
 
     def score_output(self, output_: HackathonOutput) -> None:
+        direction_prompt = """
+For the following trade entry, your task is to determine the direction one of 'Normal' or 'Reversed' 
+'Normal' means money is moving from the Client to the Bank (we/us)
+'Reversed' means money is moving from the Bank (we/us) to the Client
+
+E.g:
+Client Buys: 'Normal'
+Client Sells: 'Reversed'
+We Buy: 'Reversed'
+We Sell: 'Normal'
+Client to pay: 'Normal'
+Bank to pay: 'Reversed'
+
+Here is the trade entry:
+```
+{trade}
+```
+Respond in as few words as possible, end your response with either 'Normal' or 'Reversed'.
+If unsure, return 'Normal'.
+""".strip()
 
         if Context.current().trial is not None:
             raise UserError("Cannot override TrialId that is already set, exiting.")
 
         with Context(full_llm=self.llm, trial=TrialKey(trial_id=str(output_.trial_id))) as context:
+            print("*"*20 + "original" + "*"*20)
+            print(output_.entry_text)
 
             # Load the full LLM specified by the context
             llm = context.load_one(Llm, context.full_llm)
             query = self.prompt.format(input_text=output_.entry_text)
 
+            output = llm.completion(direction_prompt)
+            direction = "reversed" not in output.lower()
+            print("*"*20 + "direction" + "*"*20)
+            print(output)
+            print(direction)
+
             output = llm.completion(query)
+
+            print("*" * 20 + "tagged" + "*" * 20)
+            print(output)
             # Find the substring in the original text that matches the tagged region
             # Includes error correction
             json_output = find_tags(output_.entry_text, output)
             # this format supports multiple results for each field, fix it:
             extracted_results = {k: v[0] for k, v in json_output.items()}
+
+            if not extracted_results:
+                print("*" * 20 + "json fallback" + "*" * 20)
+                try:
+                    # maybe the model returned json
+                    extracted_results = RetrieverUtil.extract_json(output)
+                except:
+                    pass
+
+            print("*" * 20 + "extracted" +"*" * 20)
+            print(extracted_results)
 
             trade_parameters = self._retrieve_trade_parameters(extracted_results, output_.entry_text)
 
@@ -219,8 +275,12 @@ class BulkAnnotateSolution(HackathonSolution):
             output_.tenor_years = trade_parameters.get("tenor_years")
             output_.effective_date = trade_parameters.get("effective_date")
 
+            if direction:
+                leg_type = "pay"
+            else:
+                leg_type = "rec"
             # Populate pay leg
-            pay_leg_parameters = self._leg_entry_to_dict(extracted_results, output_.entry_text, "Pay leg")
+            pay_leg_parameters = self._leg_entry_to_dict(extracted_results, output_.entry_text, leg_type)
             output_.pay_leg_notional = pay_leg_parameters.get("notional_amount")
             output_.pay_leg_ccy = pay_leg_parameters.get("notional_currency")
             output_.pay_leg_basis = pay_leg_parameters.get("basis")
@@ -230,8 +290,13 @@ class BulkAnnotateSolution(HackathonSolution):
             output_.pay_leg_fixed_rate_pct = pay_leg_parameters.get("fixed_rate")
             output_.pay_leg_ccy = pay_leg_parameters.get("currency")
 
+            if direction:
+                leg_type = "rec"
+            else:
+                leg_type = "pay"
+
             # Populate receive leg
-            rec_leg_parameters = self._leg_entry_to_dict(extracted_results, output_.entry_text, "Receive leg")
+            rec_leg_parameters = self._leg_entry_to_dict(extracted_results, output_.entry_text, leg_type)
             output_.rec_leg_notional = rec_leg_parameters.get("notional_amount")
             output_.rec_leg_ccy = rec_leg_parameters.get("notional_currency")
             output_.rec_leg_basis = rec_leg_parameters.get("basis")
@@ -240,3 +305,9 @@ class BulkAnnotateSolution(HackathonSolution):
             output_.rec_leg_float_spread_bp = rec_leg_parameters.get("float_spread")
             output_.rec_leg_fixed_rate_pct = rec_leg_parameters.get("fixed_rate")
             output_.rec_leg_ccy = rec_leg_parameters.get("currency")
+
+            # post processing:
+            if output_.pay_leg_notional and not output_.rec_leg_notional:
+                output_.rec_leg_notional = output_.pay_leg_notional
+            elif output_.rec_leg_notional and not output_.pay_leg_notional:
+                output_.pay_leg_notional = output_.rec_leg_notional

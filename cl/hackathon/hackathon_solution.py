@@ -665,4 +665,5 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
             context.save_one(statistics)
             all_statistics.append(statistics)
 
+        all_statistics = sorted(all_statistics, key=lambda x: int(x.trade_id))
         self.statistics = all_statistics

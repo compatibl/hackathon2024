@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from dataclasses import dataclass
+import traceback
+from dataclasses import dataclass, asdict
 from typing import Dict
 
 from cl.convince.retrievers.retriever_util import RetrieverUtil
@@ -29,7 +30,7 @@ from cl.tradeentry.entries.date_or_tenor_entry import DateOrTenorEntry
 from cl.tradeentry.entries.number_entry import NumberEntry
 from cl.hackathon.hackathon_output import HackathonOutput
 from cl.hackathon.hackathon_solution import HackathonSolution
-from cl.hackathon.bulk_annotate_utils import find_tags
+from cl.hackathon.bulk_annotate_utils import find_tags, maybe_convert
 from cl.tradeentry.entries.pay_freq_months_entry import PayFreqMonthsEntry
 from cl.tradeentry.trades.currency_key import CurrencyKey
 
@@ -42,7 +43,7 @@ class BulkAnnotateSolution(HackathonSolution):
     """One step prompt to parse trade."""
 
     @staticmethod
-    def _extract_notional(extracted_notional: str|None) -> (float, str):
+    def _extract_notional(extracted_notional: str | None) -> (float, str):
         notional_amount = None
         notional_currency = None
         context = Context.current()
@@ -67,7 +68,7 @@ class BulkAnnotateSolution(HackathonSolution):
 
         return notional_amount, notional_currency
 
-    def _leg_entry_to_dict(self, extracted_results:Dict[str, str], trade_description: str, leg_type: str) -> Dict:
+    def _leg_entry_to_dict(self, extracted_results: Dict[str, str], trade_description: str, leg_type: str) -> Dict:
         retriever_error_message_prefix = (
             f"Error trying to extract the field from the trade description\nTrade description: {trade_description}\n"
         )
@@ -102,9 +103,12 @@ class BulkAnnotateSolution(HackathonSolution):
         extracted_float_spread = extracted_results.get(leg_type + "_leg_float_spread", None)
         if extracted_float_spread is not None:
             try:
-                float_spread = NumberEntry(text=extracted_float_spread)
-                float_spread.run_generate()
-                entry_dict["float_spread"] = str(FloatUtil.to_int_or_float(v)) if (v := float_spread.value) else None
+                if v:= maybe_convert(extracted_float_spread).isnumeric():
+                    entry_dict["float_spread"] = v
+                else:
+                    float_spread = NumberEntry(text=extracted_float_spread)
+                    float_spread.run_generate()
+                    entry_dict["float_spread"] = str(FloatUtil.to_int_or_float(v)) if (v := float_spread.value) else None
             except Exception as e:
                 entry_dict["float_spread"] = entry_error_message_template.format(
                     extracted_field=extracted_float_spread, exception_message=str(e)
@@ -138,6 +142,7 @@ class BulkAnnotateSolution(HackathonSolution):
         # Fixed Rate
         extracted_fixed_rate = extracted_results.get(leg_type + "_leg_fixed_rate_pct", None)
         if extracted_fixed_rate is not None:
+            extracted_fixed_rate = extracted_fixed_rate.lower().replace("%", "").replace("percent", "")
             try:
                 fixed_rate = NumberEntry(text=extracted_fixed_rate)
                 fixed_rate.run_generate()
@@ -148,7 +153,6 @@ class BulkAnnotateSolution(HackathonSolution):
                 )
 
         return entry_dict
-
 
     @staticmethod
     def _retrieve_trade_parameters(extracted_results, input_description: str) -> Dict:
@@ -179,10 +183,11 @@ class BulkAnnotateSolution(HackathonSolution):
                 )
                 trade_parameters["maturity_date"] = formatted_error_message
 
-
         # tenor
         extracted_tenor = extracted_results.get("tenor_years", None)
         if extracted_tenor is not None:
+            extracted_tenor = "".join([i for i in extracted_tenor if i.isnumeric()]) + "y"
+
             try:
                 tenor = DateOrTenorEntry(text=extracted_tenor)
                 tenor.run_generate()
@@ -210,104 +215,150 @@ class BulkAnnotateSolution(HackathonSolution):
         return trade_parameters
 
     def score_output(self, output_: HackathonOutput) -> None:
-        direction_prompt = """
-For the following trade entry, your task is to determine the direction one of 'Normal' or 'Reversed' 
-'Normal' means money is moving from the Client to the Bank (we/us)
-'Reversed' means money is moving from the Bank (we/us) to the Client
+        try:
+            direction_prompt = """
+    For the following trade entry, your task is to determine the direction one of 'Normal' or 'Reversed' 
+    'Normal' means money is moving from the Client to the Bank (we/us)
+    'Reversed' means money is moving from the Bank (we/us) to the Client
+    
+    E.g:
+    Client Buys: 'Normal'
+    Client Sells: 'Reversed'
+    We Buy: 'Reversed'
+    We Sell: 'Normal'
+    Client to pay: 'Normal'
+    Bank to pay: 'Reversed'
+    
+    Here is the trade entry:
+    ```
+    {trade}
+    ```
+    Respond in as few words as possible, end your response with either 'Normal' or 'Reversed'.
+    If unsure, return 'Normal'.
+    """.strip()
 
-E.g:
-Client Buys: 'Normal'
-Client Sells: 'Reversed'
-We Buy: 'Reversed'
-We Sell: 'Normal'
-Client to pay: 'Normal'
-Bank to pay: 'Reversed'
+            if Context.current().trial is not None:
+                raise UserError("Cannot override TrialId that is already set, exiting.")
 
-Here is the trade entry:
-```
-{trade}
-```
-Respond in as few words as possible, end your response with either 'Normal' or 'Reversed'.
-If unsure, return 'Normal'.
-""".strip()
+            with Context(full_llm=self.llm, trial=TrialKey(trial_id=str(output_.trial_id))) as context:
+                print("*" * 20 + "original" + "*" * 20)
+                print(output_.entry_text)
 
-        if Context.current().trial is not None:
-            raise UserError("Cannot override TrialId that is already set, exiting.")
+                # Load the full LLM specified by the context
+                llm = context.load_one(Llm, context.full_llm)
+                query = self.prompt.format(input_text=output_.entry_text)
 
-        with Context(full_llm=self.llm, trial=TrialKey(trial_id=str(output_.trial_id))) as context:
-            print("*"*20 + "original" + "*"*20)
-            print(output_.entry_text)
+                # output = llm.completion(direction_prompt.format(trade=output_.entry_text))
+                # direction = "reversed" not in output.lower()
+                # print("*"*20 + "direction" + "*"*20)
+                # print(output)
+                # print(direction)
+                direction = True  # directionality makes it worse
 
-            # Load the full LLM specified by the context
-            llm = context.load_one(Llm, context.full_llm)
-            query = self.prompt.format(input_text=output_.entry_text)
+                output = llm.completion(query)
 
-            output = llm.completion(direction_prompt)
-            direction = "reversed" not in output.lower()
-            print("*"*20 + "direction" + "*"*20)
-            print(output)
-            print(direction)
+                print("*" * 20 + "tagged" + "*" * 20)
+                print(output)
+                # Find the substring in the original text that matches the tagged region
+                # Includes error correction
+                json_output = find_tags(output_.entry_text, output)
+                # this format supports multiple results for each field, fix it:
+                extracted_results = {k: v[0] for k, v in json_output.items()}
 
-            output = llm.completion(query)
+                if not extracted_results:
+                    print("*" * 20 + "json fallback" + "*" * 20)
+                    try:
+                        # maybe the model returned json
+                        extracted_results = RetrieverUtil.extract_json(output)
+                    except:
+                        pass
 
-            print("*" * 20 + "tagged" + "*" * 20)
-            print(output)
-            # Find the substring in the original text that matches the tagged region
-            # Includes error correction
-            json_output = find_tags(output_.entry_text, output)
-            # this format supports multiple results for each field, fix it:
-            extracted_results = {k: v[0] for k, v in json_output.items()}
+                print("*" * 20 + "extracted" + "*" * 20)
+                print(extracted_results)
+                self.build_output(output_, direction, extracted_results, {})
 
-            if not extracted_results:
-                print("*" * 20 + "json fallback" + "*" * 20)
-                try:
-                    # maybe the model returned json
-                    extracted_results = RetrieverUtil.extract_json(output)
-                except:
-                    pass
+                found = {}
+                for k, v in asdict(output_).items():
+                    if k in extracted_results and v and ("error" not in v.lower()):
+                        found[k] = v
 
-            print("*" * 20 + "extracted" +"*" * 20)
-            print(extracted_results)
+                retry = {}
+                for k, v in extracted_results.items():
+                    if v is not None:
+                        if k not in found:
+                            retry[k] = maybe_convert(v)
 
-            trade_parameters = self._retrieve_trade_parameters(extracted_results, output_.entry_text)
+                if retry:
+                    print("*" * 20 + "retrying" + "*" * 20)
+                    print(retry)
+                    self.build_output(output_, direction, retry, found)
 
+                print("*" * 20 + "done" + "*" * 20)
+
+        except:
+            traceback.print_exc()
+
+    def build_output(self, output_, direction, extracted_results, found_dict):
+        trade_parameters = self._retrieve_trade_parameters(extracted_results, output_.entry_text)
+        if "maturity_date" not in found_dict:
             output_.maturity_date = trade_parameters.get("maturity_date")
+        if "tenor_years" not in found_dict:
             output_.tenor_years = trade_parameters.get("tenor_years")
+        if "effective_date" not in found_dict:
             output_.effective_date = trade_parameters.get("effective_date")
 
-            if direction:
-                leg_type = "pay"
-            else:
-                leg_type = "rec"
-            # Populate pay leg
-            pay_leg_parameters = self._leg_entry_to_dict(extracted_results, output_.entry_text, leg_type)
+        if direction:
+            leg_type = "pay"
+        else:
+            leg_type = "rec"
+        # Populate pay leg
+        pay_leg_parameters = self._leg_entry_to_dict(extracted_results, output_.entry_text, leg_type)
+
+        if "pay_leg_notional" not in found_dict:
             output_.pay_leg_notional = pay_leg_parameters.get("notional_amount")
+        if "pay_leg_ccy" not in found_dict:
             output_.pay_leg_ccy = pay_leg_parameters.get("notional_currency")
+        if "pay_leg_basis" not in found_dict:
             output_.pay_leg_basis = pay_leg_parameters.get("basis")
+        if "pay_leg_freq_months" not in found_dict:
             output_.pay_leg_freq_months = pay_leg_parameters.get("freq_months")
+        if "pay_leg_float_index" not in found_dict:
             output_.pay_leg_float_index = pay_leg_parameters.get("float_index")
+        if "pay_leg_float_spread_bp" not in found_dict:
             output_.pay_leg_float_spread_bp = pay_leg_parameters.get("float_spread")
+        if "pay_leg_fixed_rate_pct" not in found_dict:
             output_.pay_leg_fixed_rate_pct = pay_leg_parameters.get("fixed_rate")
+        if "pay_leg_ccy " not in found_dict:  # Changed key to "pay_leg_currency" for consistency
             output_.pay_leg_ccy = pay_leg_parameters.get("currency")
 
-            if direction:
-                leg_type = "rec"
-            else:
-                leg_type = "pay"
+        if direction:
+            leg_type = "rec"
+        else:
+            leg_type = "pay"
 
-            # Populate receive leg
-            rec_leg_parameters = self._leg_entry_to_dict(extracted_results, output_.entry_text, leg_type)
+        # Populate receive leg
+        rec_leg_parameters = self._leg_entry_to_dict(extracted_results, output_.entry_text, leg_type)
+        if "rec_leg_notional" not in found_dict:
             output_.rec_leg_notional = rec_leg_parameters.get("notional_amount")
+        if "rec_leg_ccy" not in found_dict:
             output_.rec_leg_ccy = rec_leg_parameters.get("notional_currency")
+        if "rec_leg_basis" not in found_dict:
             output_.rec_leg_basis = rec_leg_parameters.get("basis")
+        if "rec_leg_freq_months" not in found_dict:
             output_.rec_leg_freq_months = rec_leg_parameters.get("freq_months")
+        if "rec_leg_float_index" not in found_dict:
             output_.rec_leg_float_index = rec_leg_parameters.get("float_index")
+        if "rec_leg_float_spread_bp" not in found_dict:
             output_.rec_leg_float_spread_bp = rec_leg_parameters.get("float_spread")
+        if "rec_leg_fixed_rate_pct" not in found_dict:
             output_.rec_leg_fixed_rate_pct = rec_leg_parameters.get("fixed_rate")
+        if "rec_leg_ccy " not in found_dict:  # Changed key to "rec_leg_currency" for consistency
             output_.rec_leg_ccy = rec_leg_parameters.get("currency")
 
-            # post processing:
+        # post processing:
+        if "rec_leg_notional" not in found_dict:
             if output_.pay_leg_notional and not output_.rec_leg_notional:
                 output_.rec_leg_notional = output_.pay_leg_notional
-            elif output_.rec_leg_notional and not output_.pay_leg_notional:
+        if "pay_leg_notional" not in found_dict:
+            if output_.rec_leg_notional and not output_.pay_leg_notional:
                 output_.pay_leg_notional = output_.rec_leg_notional

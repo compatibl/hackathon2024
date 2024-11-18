@@ -1,34 +1,38 @@
 ﻿solution_id,trade_group,trade_ids,llm,prompt
-GptBulkAnnotate,Preview,,gpt-4o-02,"You will be provided with a trade entry and a list with parameter descriptions.
-Your task is try to find every parameter from the list and return it in the correct format specified in the parameter description.
-
+GptBulkAnnotate,Preview,,gpt-4o-02,"You are a financial expert for interest rate swaps, and you understand trader messages well.
+You analyse the messages from the perspective of the Bank.
+You will be provided with a trade entry and a list with parameter descriptions.
 Every parameter description is a dictionary the parameter 'name' and 'description' keys.
 For every parameter in the list of parameter descriptions try to find this parameter in the trade entry.
 If you can not find the parameter then skip it.
-Otherwise extract the parameter by copying its value form the text.
+Otherwise tag the value of the parameter in the text. Do not worry about the format.
+
+parameters beginning 'pay' mean that the BANK is paying.
+parameters beginning 'rec' mean that the CLIENT is receiving.
+The trade text might be from the client's perspective, but you are smart enough to get the tags correct.
 
 Parameter descriptions:
 '''
 [
     {{
         'name': 'effective_date',
-        'description': 'Effective date in ISO-8601 yyyy-mm-dd format (omit if not specified).'
+        'description': 'Effective date  of the trade'
     }},
     {{
         'name': 'maturity_date',
-        'description': 'Maturity date in ISO-8601 yyyy-mm-dd string format (omit if not specified).'
+        'description': 'Maturity date of the trade'
     }},
     {{
         'name': 'tenor_years',
-        'description': 'Tenor in whole years, for example 10 for a 10-year swap (omit if not specified).'
+        'description': 'Tenor in years, usually formatted like Xy, common values are 1,2,5,10.'
     }},
     {{
         'name': 'pay_leg_notional',
-        'description': 'Pay leg notional amount, without currency.'
+        'description': 'Pay leg notional amount, Do not tag currency. It might use abbreviations like k, m, b. If Notional is given then use it as pay_leg_notional.'
     }},
     {{
         'name': 'pay_leg_ccy',
-        'description': 'Pay leg payment currency in 3-letter ISO-4217 format, for example USD.'
+        'description': 'Pay leg payment currency in 3-letter ISO-4217 format, for example USD or it could be a symbol like £. The currency is specified in 'We buy', 'We pay', 'Long', 'clients receive' or 'client receives'. Note this is not the currency for 'clients pay' or 'client pays'.'
     }},
     {{
         'name': 'pay_leg_freq_months',
@@ -36,11 +40,11 @@ Parameter descriptions:
     }},
     {{
         'name': 'pay_leg_basis',
-        'description': 'Pay leg daycount basis as specified, for example act/360.'
+        'description': 'The day count basis specified in 'Pay', for example act/360. This is not the currency, do not get confused.'
     }},
     {{
         'name': 'pay_leg_float_index',
-        'description': 'Pay leg floating interest rate index as specified, e.g., 3m Term SOFR (omit for a fixed leg).'
+        'description': 'Pay leg floating interest rate index as specified, e.g., 3m Term SOFR, or just SOFR. use the full term if given.'
     }},
     {{
         'name': 'pay_leg_float_spread_bp',
@@ -48,27 +52,27 @@ Parameter descriptions:
     }},
     {{
         'name': 'pay_leg_fixed_rate_pct',
-        'description': 'Pay leg fixed rate in percent, for example 3.45 (omit for a floating leg).'
+        'description': 'Pay leg fixed rate in percent, for example 3.45% (include the % sign in tag).'
     }},
     {{
         'name': 'rec_leg_notional',
-        'description': 'Receive leg notional amount, for example 10000000.'
+        'description': 'Receive leg notional amount. Do not tag currency. It might use abbreviations like k, m, b. If Notional is given then use it as pay_leg_notional.'
     }},
     {{
         'name': 'rec_leg_ccy',
-        'description': 'Receive leg payment currency in 3-letter ISO-4217 format, for example USD.'
+        'description': 'Receive leg payment currency in 3-letter ISO-4217 format, for example USD or it could be a symbol like £. The currency is specified in 'We sell', 'We receive', 'Short', 'clients pay' or 'client pay'. Note this is not the currency for 'clients receive' or 'client receives'. If it is not clear the subject then look for the subject from the previous sentence.'
     }},
     {{
         'name': 'rec_leg_freq_months',
-        'description': 'Pay leg payment frequency in months, for example 3.'
+        'description': 'Receive leg payment frequency in months, for example 3.'
     }},
     {{
         'name': 'rec_leg_basis',
-        'description': 'Pay leg daycount basis as specified, for example act/360.'
+        'description': 'Receive leg day count basis as specified, for example act/360. Note this is not currency so the output shouldn't be in 3-letter ISO-4217 format.'
     }},
     {{
         'name': 'rec_leg_float_index',
-        'description': 'Receive leg floating interest rate index as specified, e.g., 3m Term SOFR (omit for a fixed leg).'
+        'description': 'Receive leg floating interest rate index as specified, e.g., 3m Term SOFR, or just SOFR. use the full term if given.'
     }},
     {{
         'name': 'rec_leg_float_spread_bp',
@@ -76,7 +80,7 @@ Parameter descriptions:
     }},
     {{
         'name': 'rec_leg_fixed_rate_pct',
-        'description': 'Receive leg fixed rate in percent (omit for a floating leg).'
+        'description': 'Receive leg fixed rate, for example 3.45%. Usually a expressed as a percent (include the % sign in tag) (omit for a floating leg).'
     }}
 ]
 '''
@@ -93,108 +97,20 @@ Not all fields will be present.
 For example:
 Sell 2y SOFR swap at 2.5%
 Becomes:
-Sell <tenor_years>2y</tenor_years> <rec_leg_float_index>SOFR</rec_leg_float_index> swap at <pay_leg_fixed_rate_pct>2.5%</pay_leg_fixed_rate_pct>
+Sell <tenor_years>2y</tenor_years> <pay_leg_float_index>SOFR</pay_leg_float_index> swap at <pay_leg_fixed_rate_pct>2.5%</pay_leg_fixed_rate_pct>
 
 You must not change the text between the tags.
 Do not reformat dates, fix typos or change any of the words in any way.
 
-"
-LlamaBulkAnnotate,Preview,,llama-v3-70b-instruct,"You will be provided with a trade entry and a list with parameter descriptions.
-Your task is try to find every parameter from the list and return it in the correct format specified in the parameter description.
+Do not tag more than is needed, for example:
+Tenor: 5 years
+Becomes
+Tenor: <tenor_years>5</tenor_years> years
 
-Every parameter description is a dictionary the parameter 'name' and 'description' keys.
-For every parameter in the list of parameter descriptions try to find this parameter in the trade entry.
-If you can not find the parameter then skip it.
-Otherwise extract the parameter by copying its value form the text.
-
-Parameter descriptions:
-'''
-[
-    {{
-        'name': 'effective_date',
-        'description': 'Effective date in ISO-8601 yyyy-mm-dd format (omit if not specified).'
-    }},
-    {{
-        'name': 'maturity_date',
-        'description': 'Maturity date in ISO-8601 yyyy-mm-dd string format (omit if not specified).'
-    }},
-    {{
-        'name': 'tenor_years',
-        'description': 'Tenor in whole years, for example 10 for a 10-year swap (omit if not specified).'
-    }},
-    {{
-        'name': 'pay_leg_notional',
-        'description': 'Pay leg notional amount, without currency.'
-    }},
-    {{
-        'name': 'pay_leg_ccy',
-        'description': 'Pay leg payment currency in 3-letter ISO-4217 format, for example USD.'
-    }},
-    {{
-        'name': 'pay_leg_freq_months',
-        'description': 'Pay leg payment frequency in months, for example 3.'
-    }},
-    {{
-        'name': 'pay_leg_basis',
-        'description': 'Pay leg daycount basis as specified, for example act/360.'
-    }},
-    {{
-        'name': 'pay_leg_float_index',
-        'description': 'Pay leg floating interest rate index as specified, e.g., 3m Term SOFR (omit for a fixed leg).'
-    }},
-    {{
-        'name': 'pay_leg_float_spread_bp',
-        'description': 'Receive leg spread in basis points, for example 30 (omit for a fixed leg, 0 or omit if not specified).'
-    }},
-    {{
-        'name': 'pay_leg_fixed_rate_pct',
-        'description': 'Pay leg fixed rate in percent, for example 3.45 (omit for a floating leg).'
-    }},
-    {{
-        'name': 'rec_leg_notional',
-        'description': 'Receive leg notional amount, for example 10000000.'
-    }},
-    {{
-        'name': 'rec_leg_ccy',
-        'description': 'Receive leg payment currency in 3-letter ISO-4217 format, for example USD.'
-    }},
-    {{
-        'name': 'rec_leg_freq_months',
-        'description': 'Pay leg payment frequency in months, for example 3.'
-    }},
-    {{
-        'name': 'rec_leg_basis',
-        'description': 'Pay leg daycount basis as specified, for example act/360.'
-    }},
-    {{
-        'name': 'rec_leg_float_index',
-        'description': 'Receive leg floating interest rate index as specified, e.g., 3m Term SOFR (omit for a fixed leg).'
-    }},
-    {{
-        'name': 'rec_leg_float_spread_bp',
-        'description': 'Receive leg spread in basis points, for example 30 (omit for a fixed leg, 0 or omit if not specified).'
-    }},
-    {{
-        'name': 'rec_leg_fixed_rate_pct',
-        'description': 'Receive leg fixed rate in percent (omit for a floating leg).'
-    }}
-]
-'''
-
-Trade entry:
-'''
-{input_text}
-'''
-
-You must return the original trade entry text with the addition of xml like annotations.
-The annotations should use the filed names above.
-Not all fields will be present.
-
-For example:
-Sell 2y SOFR swap at 2.5%
+Pay close attention to trade direction. We are always taking the role of the BANK.
+This means that if the Client Pays, We receive. For example:
+Client Pays 3% Client Receives 3.5%
 Becomes:
-Sell <tenor_years>2y</tenor_years> <rec_leg_float_index>SOFR</rec_leg_float_index> swap at <pay_leg_fixed_rate_pct>2.5%</pay_leg_fixed_rate_pct>
-
-You must not change the text between the tags.
-Do not reformat dates, fix typos or change any of the words in any way.
+Client Pays <rec_leg_fixed_rate_pct>3%</rec_leg_fixed_rate_pct> Client Receives <pay_leg_fixed_rate_pct>3.5%</pay_leg_fixed_rate_pct.
 "
+

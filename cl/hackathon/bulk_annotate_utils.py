@@ -4,6 +4,7 @@ except {ImportError, ModuleNotFoundError}:
     editops = None
 
 import re
+import text_to_num
 
 
 def re2dict(m, start=None):
@@ -143,3 +144,26 @@ def _editops_from_opcodes(opcodes, source_length, destination_length):
 # If the library is not available then use the slower python one (AI generated, results not guaranteed)
 if editops is None:
     editops = py_editops
+
+
+def maybe_convert(x):
+    edits = {
+        "point": ".",
+    }
+    checked = []
+    for word in x.split(" "):
+        if word in edits:
+            checked.append(edits[word])
+        else:
+            try:
+                word = text_to_num.text2num(word, "en")
+                checked.append(str(word))
+            except:
+                pass
+    try:
+        return str(int("".join(checked)))
+    except:
+        try:
+            return str(float("".join(checked)))
+        except:
+            return x

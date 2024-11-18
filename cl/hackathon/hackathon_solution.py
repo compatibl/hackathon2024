@@ -118,36 +118,17 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
         if not is_resulting_solution:
             if self.trial_count is None:
                 self.trial_count = str(10)
-        else:
-            self.inputs = self.get_inputs()
-            self.outputs = self.get_outputs()
-
-        output_count = len(self.outputs) if self.outputs else None
-        if output_count:
-            completed_output_count = len([x for x in self.outputs if x.status == "Completed"])
-            if output_count == completed_output_count:
-                self.status = "Completed"
-                # try:
-                #     if is_resulting_solution:
-                #         self.retrievals = self.view_retrievals()
-                # except Exception as e:
-                #     # Continue even if retrievals are not available
-                #     pass
-
-            else:
-                pct_done = int(round(completed_output_count / output_count * 100, 0))
-                self.status = f"{pct_done}% Done"
 
         # Return self to enable method chaining
         return self
 
     def view_inputs(self) -> List[HackathonInput]:
         """Return the list of inputs specified by the trade list."""
-        return self.get_inputs()
+        return self.inputs
 
     def view_outputs(self) -> List[HackathonOutput]:
         """Return the list of outputs (each with its score)."""
-        return self.get_outputs()
+        return self.outputs
 
     def view_statistics(self) -> List[HackathonScoringStatistics]:
         """Return the list of inputs specified by the trade list."""

@@ -333,8 +333,8 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
                 scored_solution.submit_trial_output(trade_id=input_.trade_id, trial_id=str(trial_index))
 
         # Compare solution outputs with expected outputs and save HackathonScoreItems for each pair
-        #scored_solution.status = "Analyzing"
-        #Context.current().save_one(scored_solution)
+        # scored_solution.status = "Analyzing"
+        # Context.current().save_one(scored_solution)
         # scored_solution.calculate()
 
         # Save scoring object with total score
@@ -366,7 +366,9 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
 
         # Iterate over expected output fields and compare values
         for field_name in [
-            f for f in expected_output_fields if f not in expected_output_key_fields and f not in ("entry_text", "status")
+            f
+            for f in expected_output_fields
+            if f not in expected_output_key_fields and f not in ("entry_text", "status")
         ]:
 
             expected_field_value = getattr(expected_output, field_name, None)
@@ -442,9 +444,9 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
                 )
 
                 actual_output = context.load_one(HackathonOutput, actual_output_key)
-                #while actual_output.status != "Completed":
+                # while actual_output.status != "Completed":
                 #    time.sleep(1)
-                 #   actual_output = context.load_one(HackathonOutput, actual_output_key)
+                #   actual_output = context.load_one(HackathonOutput, actual_output_key)
 
                 # Create a scoring item by comparing actual and expected outputs
                 score_item = self.get_score_item(input_key, actual_output, expected_output)
@@ -484,7 +486,7 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
                 LogMessage(
                     level="Info",
                     message=f"An error during {source_date_text} "
-                            f"vs. {target_date_text} date comparison in scoring.\n{str(e)}"
+                    f"vs. {target_date_text} date comparison in scoring.\n{str(e)}",
                 )
             )
             # False if cannot parse as a date
@@ -505,7 +507,7 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
                 LogMessage(
                     level="Info",
                     message=f"An error during {source_number_text} "
-                            f"vs. {target_number_text} number comparison in scoring.\n{str(e)}"
+                    f"vs. {target_number_text} number comparison in scoring.\n{str(e)}",
                 )
             )
             # False if cannot parse as a date

@@ -23,12 +23,12 @@ from cl.convince.prompts.formatted_prompt import FormattedPrompt
 from cl.convince.retrievers.annotating_retriever import AnnotatingRetriever
 from cl.convince.retrievers.retrieval import Retrieval
 from cl.tradeentry.entries.amount_entry import AmountEntry
-from cl.tradeentry.entries.currency_entry import CurrencyEntry
+from cl.tradeentry.entries.ccy_entry import CcyEntry
 from cl.tradeentry.entries.date_entry import DateEntry
 from cl.tradeentry.entries.date_or_tenor_entry import DateOrTenorEntry
 from cl.tradeentry.entries.number_entry import NumberEntry
 from cl.tradeentry.entries.pay_freq_months_entry import PayFreqMonthsEntry
-from cl.tradeentry.trades.currency_key import CurrencyKey
+from cl.tradeentry.trades.ccy_key import CcyKey
 from cl.hackathon.hackathon_input import HackathonInput
 from cl.hackathon.hackathon_output import HackathonOutput
 from cl.hackathon.hackathon_solution import HackathonSolution
@@ -84,11 +84,11 @@ class AnnotationSolution(HackathonSolution):
                 notional_amount = notional_amount_entry.value
 
             if notional_currency_entry_key := notional.currency:
-                notional_currency_entry = context.load_one(CurrencyEntry, notional_currency_entry_key)
+                notional_currency_entry = context.load_one(CcyEntry, notional_currency_entry_key)
 
                 if notional_currency_entry_currency_key := notional_currency_entry.currency:
                     notional_currency_entry_currency = context.load_one(
-                        CurrencyKey, notional_currency_entry_currency_key
+                        CcyKey, notional_currency_entry_currency_key
                     )
                     notional_currency = notional_currency_entry_currency.iso_code
 
@@ -188,11 +188,11 @@ class AnnotationSolution(HackathonSolution):
 
         if extracted_currency is not None:
             try:
-                currency = CurrencyEntry(text=extracted_currency)
+                currency = CcyEntry(text=extracted_currency)
                 currency.run_generate()
                 if notional_currency_entry_currency_key := currency.currency:
                     notional_currency_entry_currency = Context.current().load_one(
-                        CurrencyKey, notional_currency_entry_currency_key
+                        CcyKey, notional_currency_entry_currency_key
                     )
                     entry_dict["currency"] = notional_currency_entry_currency.iso_code
             except Exception as e:

@@ -87,9 +87,7 @@ class AnnotationSolution(HackathonSolution):
                 notional_currency_entry = context.load_one(CcyEntry, notional_currency_entry_key)
 
                 if notional_currency_entry_currency_key := notional_currency_entry.currency:
-                    notional_currency_entry_currency = context.load_one(
-                        CcyKey, notional_currency_entry_currency_key
-                    )
+                    notional_currency_entry_currency = context.load_one(CcyKey, notional_currency_entry_currency_key)
                     notional_currency = notional_currency_entry_currency.iso_code
 
         return notional_amount, notional_currency

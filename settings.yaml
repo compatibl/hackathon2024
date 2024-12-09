@@ -29,6 +29,11 @@ default:
   runtime_preload_dirs:
     - cl
 
+  # Documented in LlmSettings class
+  convince_llm_locale: en-US
+  convince_llm_full: gpt-4o
+  convince_llm_mini: gpt-4o-mini
+
 # Test environment
 test:
 

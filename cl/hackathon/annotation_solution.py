@@ -14,6 +14,8 @@
 
 from dataclasses import dataclass
 from typing import Dict
+
+from cl.convince.context.llm_context import LlmContext
 from cl.runtime import Context
 from cl.runtime.experiments.trial_key import TrialKey
 from cl.runtime.log.exceptions.user_error import UserError
@@ -289,43 +291,44 @@ class AnnotationSolution(HackathonSolution):
         if Context.current().trial is not None:
             raise UserError("Cannot override TrialId that is already set, exiting.")  # TODO: Append?
 
-        with Context(full_llm=self.llm, trial=TrialKey(trial_id=str(output_.trial_id))) as context:
+        with Context(trial=TrialKey(trial_id=str(output_.trial_id))):
+            with LlmContext(allow_root=True, full_llm=self.llm):
 
-            retriever = AnnotatingRetriever(
-                retriever_id=f"{self.solution_id}::{self.trade_group}::{output_.trade_id}::{output_.trial_id}",
-                prompt=FormattedPrompt(
-                    prompt_id="AnnotatingRetriever",
-                    params_type=Retrieval.__name__,
-                    template=self.parameter_annotation_prompt,
-                ),
-            )
-            retriever.init_all()
-            Context.current().save_one(retriever)
+                retriever = AnnotatingRetriever(
+                    retriever_id=f"{self.solution_id}::{self.trade_group}::{output_.trade_id}::{output_.trial_id}",
+                    prompt=FormattedPrompt(
+                        prompt_id="AnnotatingRetriever",
+                        params_type=Retrieval.__name__,
+                        template=self.parameter_annotation_prompt,
+                    ),
+                )
+                retriever.init_all()
+                Context.current().save_one(retriever)
 
-            trade_parameters = self._retrieve_trade_parameters(retriever, output_.entry_text)
+                trade_parameters = self._retrieve_trade_parameters(retriever, output_.entry_text)
 
-            output_.maturity_date = trade_parameters.get("maturity_date")
-            output_.tenor_years = trade_parameters.get("tenor_years")
-            output_.effective_date = trade_parameters.get("effective_date")
+                output_.maturity_date = trade_parameters.get("maturity_date")
+                output_.tenor_years = trade_parameters.get("tenor_years")
+                output_.effective_date = trade_parameters.get("effective_date")
 
-            # Populate pay leg
-            pay_leg_parameters = self._leg_entry_to_dict(retriever, output_.entry_text, "Pay leg")
-            output_.pay_leg_notional = pay_leg_parameters.get("notional_amount")
-            output_.pay_leg_ccy = pay_leg_parameters.get("notional_currency")
-            output_.pay_leg_basis = pay_leg_parameters.get("basis")
-            output_.pay_leg_freq_months = pay_leg_parameters.get("freq_months")
-            output_.pay_leg_float_index = pay_leg_parameters.get("float_index")
-            output_.pay_leg_float_spread_bp = pay_leg_parameters.get("float_spread")
-            output_.pay_leg_fixed_rate_pct = pay_leg_parameters.get("fixed_rate")
-            output_.pay_leg_ccy = pay_leg_parameters.get("currency")
+                # Populate pay leg
+                pay_leg_parameters = self._leg_entry_to_dict(retriever, output_.entry_text, "Pay leg")
+                output_.pay_leg_notional = pay_leg_parameters.get("notional_amount")
+                output_.pay_leg_ccy = pay_leg_parameters.get("notional_currency")
+                output_.pay_leg_basis = pay_leg_parameters.get("basis")
+                output_.pay_leg_freq_months = pay_leg_parameters.get("freq_months")
+                output_.pay_leg_float_index = pay_leg_parameters.get("float_index")
+                output_.pay_leg_float_spread_bp = pay_leg_parameters.get("float_spread")
+                output_.pay_leg_fixed_rate_pct = pay_leg_parameters.get("fixed_rate")
+                output_.pay_leg_ccy = pay_leg_parameters.get("currency")
 
-            # Populate receive leg
-            rec_leg_parameters = self._leg_entry_to_dict(retriever, output_.entry_text, "Receive leg")
-            output_.rec_leg_notional = rec_leg_parameters.get("notional_amount")
-            output_.rec_leg_ccy = rec_leg_parameters.get("notional_currency")
-            output_.rec_leg_basis = rec_leg_parameters.get("basis")
-            output_.rec_leg_freq_months = rec_leg_parameters.get("freq_months")
-            output_.rec_leg_float_index = rec_leg_parameters.get("float_index")
-            output_.rec_leg_float_spread_bp = rec_leg_parameters.get("float_spread")
-            output_.rec_leg_fixed_rate_pct = rec_leg_parameters.get("fixed_rate")
-            output_.rec_leg_ccy = rec_leg_parameters.get("currency")
+                # Populate receive leg
+                rec_leg_parameters = self._leg_entry_to_dict(retriever, output_.entry_text, "Receive leg")
+                output_.rec_leg_notional = rec_leg_parameters.get("notional_amount")
+                output_.rec_leg_ccy = rec_leg_parameters.get("notional_currency")
+                output_.rec_leg_basis = rec_leg_parameters.get("basis")
+                output_.rec_leg_freq_months = rec_leg_parameters.get("freq_months")
+                output_.rec_leg_float_index = rec_leg_parameters.get("float_index")
+                output_.rec_leg_float_spread_bp = rec_leg_parameters.get("float_spread")
+                output_.rec_leg_fixed_rate_pct = rec_leg_parameters.get("fixed_rate")
+                output_.rec_leg_ccy = rec_leg_parameters.get("currency")

@@ -44,7 +44,7 @@ class OneStepSolution(HackathonSolution):
             raise UserError("Cannot override TrialId that is already set, exiting.")  # TODO: Append?
 
         with Context(trial=TrialKey(trial_id=str(output_.trial_id))):
-            with LlmContext(allow_root=True, full_llm=self.llm):
+            with LlmContext(is_root=True, full_llm=self.llm):
 
                 # Load the full LLM specified by the context
                 context = Context.current()

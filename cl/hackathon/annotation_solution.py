@@ -292,7 +292,7 @@ class AnnotationSolution(HackathonSolution):
             raise UserError("Cannot override TrialId that is already set, exiting.")  # TODO: Append?
 
         with Context(trial=TrialKey(trial_id=str(output_.trial_id))):
-            with LlmContext(allow_root=True, full_llm=self.llm):
+            with LlmContext(is_root=True, full_llm=self.llm):
 
                 retriever = AnnotatingRetriever(
                     retriever_id=f"{self.solution_id}::{self.trade_group}::{output_.trade_id}::{output_.trial_id}",

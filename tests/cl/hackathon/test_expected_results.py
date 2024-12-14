@@ -27,7 +27,7 @@ def test_expected_results():
     """Test ExpectedResults preload."""
 
     with TestingContext() as context:
-        with LlmContext(allow_root=True):
+        with LlmContext(is_root=True):
 
             # Save records from preload directory to DB and execute run_configure on all preloaded Config records
             PreloadSettings.instance().save_and_configure()

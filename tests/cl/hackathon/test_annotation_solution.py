@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import pytest
+
+from cl.convince.context.llm_context import LlmContext
 from cl.runtime.context.testing_context import TestingContext
-from cl.runtime.settings.preload_settings import PreloadSettings
 from cl.hackathon.annotation_solution import AnnotationSolution
 
 
@@ -21,11 +23,12 @@ def test_annotation_solution():
     """Test AnnotationSolution preload."""
 
     with TestingContext() as context:
+        with LlmContext(allow_root=True):
+            # Load AnnotationSolution records
+            solutions = context.load_all(AnnotationSolution)
+            for solution in solutions:
+                pass  # TODO: Perform scoring and record the output
 
-        # Save records from preload directory to DB and execute run_configure on all preloaded Config records
-        PreloadSettings.instance().save_and_configure()
 
-        # Load AnnotationSolution records
-        solutions = context.load_all(AnnotationSolution)
-        for solution in solutions:
-            pass  # TODO: Perform scoring and record the output
+if __name__ == "__main__":
+    pytest.main([__file__])

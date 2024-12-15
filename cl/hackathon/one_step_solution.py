@@ -13,13 +13,12 @@
 # limitations under the License.
 
 from dataclasses import dataclass
-
-from cl.convince.context.llm_context import LlmContext
 from cl.runtime import Context
 from cl.runtime.experiments.trial_key import TrialKey
 from cl.runtime.log.exceptions.user_error import UserError
 from cl.runtime.primitive.float_util import FloatUtil
 from cl.runtime.records.dataclasses_extensions import missing
+from cl.convince.context.llm_context import LlmContext
 from cl.convince.llms.gpt.gpt_llm import GptLlm
 from cl.convince.llms.llm import Llm
 from cl.convince.llms.llm_key import LlmKey
@@ -46,7 +45,7 @@ class OneStepSolution(HackathonSolution):
         with Context(
             trial=TrialKey(trial_id=str(output_.trial_id)),
             extensions=[LlmContext(full_llm=self.llm)],
-            ):
+        ):
             # Load the full LLM specified by the context
             context = Context.current()
             llm_context = Context.current().extension(LlmContext)

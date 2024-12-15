@@ -14,13 +14,12 @@
 
 from dataclasses import dataclass
 from typing import Dict
-
-from cl.convince.context.llm_context import LlmContext
 from cl.runtime import Context
 from cl.runtime.experiments.trial_key import TrialKey
 from cl.runtime.log.exceptions.user_error import UserError
 from cl.runtime.primitive.float_util import FloatUtil
 from cl.runtime.records.dataclasses_extensions import missing
+from cl.convince.context.llm_context import LlmContext
 from cl.convince.prompts.formatted_prompt import FormattedPrompt
 from cl.convince.retrievers.annotating_retriever import AnnotatingRetriever
 from cl.convince.retrievers.retrieval import Retrieval
@@ -294,7 +293,7 @@ class AnnotationSolution(HackathonSolution):
         with Context(
             trial=TrialKey(trial_id=str(output_.trial_id)),
             extensions=[LlmContext(full_llm=self.llm)],
-            ):
+        ):
             retriever = AnnotatingRetriever(
                 retriever_id=f"{self.solution_id}::{self.trade_group}::{output_.trade_id}::{output_.trial_id}",
                 prompt=FormattedPrompt(

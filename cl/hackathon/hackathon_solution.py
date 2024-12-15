@@ -274,7 +274,10 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
             key_type_str=key_type_str,
             key_str=self.solution_id,
             method_name=method_name,
-            method_params=[trade_id, trial_id],
+            method_params={
+                "trade_id": trade_id,
+                "trial_id": trial_id,
+            },
         )
 
         # Save and submit task
@@ -477,9 +480,9 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
         try:
             if source_date_text.strip() == target_date_text.strip():
                 return True
-            source_date_entry = DateEntry(text=source_date_text, locale="en-US")
+            source_date_entry = DateEntry(text=source_date_text)
             source_date_entry.run_generate()
-            target_date_entry = DateEntry(text=target_date_text, locale="en-US")
+            target_date_entry = DateEntry(text=target_date_text)
             target_date_entry.run_generate()
         except Exception as e:
             Context.current().save_one(
@@ -498,9 +501,9 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
         try:
             if source_number_text.strip() == target_number_text.strip():
                 return True
-            source_number_entry = NumberEntry(text=source_number_text, locale="en-US")
+            source_number_entry = NumberEntry(text=source_number_text)
             source_number_entry.run_generate()
-            target_number_entry = NumberEntry(text=target_number_text, locale="en-US")
+            target_number_entry = NumberEntry(text=target_number_text)
             target_number_entry.run_generate()
         except Exception as e:
             Context.current().save_one(

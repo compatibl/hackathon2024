@@ -23,11 +23,10 @@ def test_annotation_solution():
     """Test AnnotationSolution preload."""
 
     with TestingContext() as context:
-        with LlmContext(is_root=True):
-            # Load AnnotationSolution records
-            solutions = context.load_all(AnnotationSolution)
-            for solution in solutions:
-                pass  # TODO: Perform scoring and record the output
+        # Load AnnotationSolution records
+        solutions = context.load_all(AnnotationSolution)
+        for solution in solutions:
+            pass  # TODO: Perform scoring and record the output
 
 
 if __name__ == "__main__":

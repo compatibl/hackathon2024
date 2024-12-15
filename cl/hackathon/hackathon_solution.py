@@ -275,8 +275,9 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
             key_str=self.solution_id,
             method_name=method_name,
             method_params={
-                "trade_id": trade_id,
-                "trial_id": trial_id,
+                # TODO: Change to snake_case param names?
+                "TradeId": trade_id,
+                "TrialId": trial_id,
             },
         )
 

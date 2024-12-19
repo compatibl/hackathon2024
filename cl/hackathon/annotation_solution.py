@@ -287,13 +287,15 @@ class AnnotationSolution(HackathonSolution):
 
     def score_output(self, output_: HackathonOutput) -> None:
 
-        if TrialContext.current().trial_id is not None:
-            raise UserError("Cannot override TrialId that is already set, exiting.")  # TODO: Append?
-
         with TrialContext(trial_id=str(output_.trial_id)):
             with LlmContext(full_llm=self.llm):
+                # Get combined trial_id from all previous 'with TrialContext(...)' clauses
+                # and add it to the end of retriever_id
+                trial_id = TrialContext.get_trial_id()
+                # TODO: Move to automatic generation of retriever_id
+                retriever_id = f"{self.solution_id}::{self.trade_group}::{output_.trade_id}::{trial_id}"
                 retriever = AnnotatingRetriever(
-                    retriever_id=f"{self.solution_id}::{self.trade_group}::{output_.trade_id}::{output_.trial_id}",
+                    retriever_id=retriever_id,
                     prompt=FormattedPrompt(
                         prompt_id="AnnotatingRetriever",
                         params_type=Retrieval.__name__,

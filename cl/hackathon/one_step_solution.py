@@ -112,7 +112,9 @@ class OneStepSolution(HackathonSolution):
                         elif pay_leg_freq_months is not None:
                             pay_leg_freq_months_entry = NumberEntry(text=str(pay_leg_freq_months))
                             pay_leg_freq_months_entry.run_generate()
-                            output_.pay_leg_freq_months = str(FloatUtil.to_int_or_float(pay_leg_freq_months_entry.value))
+                            output_.pay_leg_freq_months = str(
+                                FloatUtil.to_int_or_float(pay_leg_freq_months_entry.value)
+                            )
                     except Exception as e:
                         output_.pay_leg_freq_months = str(e)
 
@@ -140,7 +142,9 @@ class OneStepSolution(HackathonSolution):
                         elif pay_leg_float_spread_bp is not None:
                             pay_leg_float_spread_bp = NumberEntry(text=str(pay_leg_float_spread_bp))
                             pay_leg_float_spread_bp.run_generate()
-                            output_.pay_leg_float_spread_bp = str(FloatUtil.to_int_or_float(pay_leg_float_spread_bp.value))
+                            output_.pay_leg_float_spread_bp = str(
+                                FloatUtil.to_int_or_float(pay_leg_float_spread_bp.value)
+                            )
                     except Exception as e:
                         output_.pay_leg_float_spread_bp = str(e)
 
@@ -152,7 +156,9 @@ class OneStepSolution(HackathonSolution):
                         elif pay_leg_fixed_rate_pct is not None:
                             pay_leg_fixed_rate_pct = NumberEntry(text=str(pay_leg_fixed_rate_pct))
                             pay_leg_fixed_rate_pct.run_generate()
-                            output_.pay_leg_fixed_rate_pct = str(FloatUtil.to_int_or_float(pay_leg_fixed_rate_pct.value))
+                            output_.pay_leg_fixed_rate_pct = str(
+                                FloatUtil.to_int_or_float(pay_leg_fixed_rate_pct.value)
+                            )
                     except Exception as e:
                         output_.pay_leg_fixed_rate_pct = str(e)
 
@@ -184,7 +190,9 @@ class OneStepSolution(HackathonSolution):
                         elif rec_leg_freq_months is not None:
                             rec_leg_freq_months_entry = NumberEntry(text=str(rec_leg_freq_months))
                             rec_leg_freq_months_entry.run_generate()
-                            output_.rec_leg_freq_months = str(FloatUtil.to_int_or_float(rec_leg_freq_months_entry.value))
+                            output_.rec_leg_freq_months = str(
+                                FloatUtil.to_int_or_float(rec_leg_freq_months_entry.value)
+                            )
                     except Exception as e:
                         output_.rec_leg_freq_months = str(e)
 
@@ -207,7 +215,9 @@ class OneStepSolution(HackathonSolution):
                         elif rec_leg_float_spread_bp is not None:
                             rec_leg_float_spread_bp = NumberEntry(text=str(rec_leg_float_spread_bp))
                             rec_leg_float_spread_bp.run_generate()
-                            output_.rec_leg_float_spread_bp = str(FloatUtil.to_int_or_float(rec_leg_float_spread_bp.value))
+                            output_.rec_leg_float_spread_bp = str(
+                                FloatUtil.to_int_or_float(rec_leg_float_spread_bp.value)
+                            )
                     except Exception as e:
                         output_.rec_leg_float_spread_bp = str(e)
 
@@ -219,6 +229,8 @@ class OneStepSolution(HackathonSolution):
                         elif rec_leg_fixed_rate_pct is not None:
                             rec_leg_fixed_rate_pct = NumberEntry(text=str(rec_leg_fixed_rate_pct))
                             rec_leg_fixed_rate_pct.run_generate()
-                            output_.rec_leg_fixed_rate_pct = str(FloatUtil.to_int_or_float(rec_leg_fixed_rate_pct.value))
+                            output_.rec_leg_fixed_rate_pct = str(
+                                FloatUtil.to_int_or_float(rec_leg_fixed_rate_pct.value)
+                            )
                     except Exception as e:
                         output_.rec_leg_fixed_rate_pct = str(e)

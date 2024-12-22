@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import pytest
+
+from cl.runtime.context.db_context import DbContext
 from cl.runtime.context.testing_context import TestingContext
 from cl.convince.context.llm_context import LlmContext
 from cl.hackathon.annotation_solution import AnnotationSolution
@@ -23,7 +25,7 @@ def test_annotation_solution():
 
     with TestingContext() as context:
         # Load AnnotationSolution records
-        solutions = context.load_all(AnnotationSolution)
+        solutions = DbContext.load_all(AnnotationSolution)
         for solution in solutions:
             pass  # TODO: Perform scoring and record the output
 

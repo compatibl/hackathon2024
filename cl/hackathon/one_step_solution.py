@@ -14,6 +14,7 @@
 
 from dataclasses import dataclass
 from cl.runtime import Context
+from cl.runtime.context.db_context import DbContext
 from cl.runtime.context.trial_context import TrialContext
 from cl.runtime.log.exceptions.user_error import UserError
 from cl.runtime.primitive.float_util import FloatUtil
@@ -44,7 +45,7 @@ class OneStepSolution(HackathonSolution):
                 # Load the full LLM specified by the context
                 context = Context.current()
                 llm_context = LlmContext.current()
-                llm = context.load_one(Llm, llm_context.full_llm)
+                llm = DbContext.load_one(Llm, llm_context.full_llm)
                 query = self.prompt.format(input_text=output_.entry_text)
 
                 output = llm.completion(query)

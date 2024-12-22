@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import pytest
+
+from cl.runtime.context.db_context import DbContext
 from cl.runtime.context.testing_context import TestingContext
 from cl.runtime.log.exceptions.user_error import UserError
 from cl.runtime.settings.preload_settings import PreloadSettings
@@ -32,7 +34,7 @@ def test_expected_results():
             PreloadSettings.instance().save_and_configure()
 
             # Ensure there is only one ExpectedResults record
-            solutions = list(context.load_all(ExpectedResults))
+            solutions = list(DbContext.load_all(ExpectedResults))
             if len(solutions) == 1:
                 expected_results = solutions[0]
             elif len(solutions) == 0:
@@ -45,7 +47,7 @@ def test_expected_results():
                 raise UserError(f"ExpectedResults identifier is '{expected_results.solution_id}', must be 'Expected'.")
 
             # Get inputs and sort by trade_id
-            inputs = context.load_all(HackathonInput)
+            inputs = DbContext.load_all(HackathonInput)
             inputs = [input for input in inputs if input.trade_group == expected_results.trade_group]
             inputs = sorted(inputs, key=lambda item: item.trade_id)
 
@@ -58,7 +60,7 @@ def test_expected_results():
                     trade_id=input.trade_id,
                     trial_id="0",
                 )
-                output = context.load_one(HackathonOutput, output_key, is_record_optional=True)
+                output = DbContext.load_one(HackathonOutput, output_key, is_record_optional=True)
                 if output is None:
                     raise UserError(f"Expected output record is not found for output key {output_key}")
 

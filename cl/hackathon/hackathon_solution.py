@@ -27,6 +27,7 @@ from typing_extensions import Self
 from cl.runtime import Context
 from cl.runtime import RecordMixin
 from cl.runtime import View
+from cl.runtime.context.db_context import DbContext
 from cl.runtime.log.exceptions.user_error import UserError
 from cl.runtime.log.log_message import LogMessage
 from cl.runtime.plots.heat_map_plot import HeatMapPlot
@@ -151,7 +152,7 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
             filtered_retrievals = []
             for output in self.get_outputs():
                 current_retriever_id = f"{self.solution_id}::{self.trade_group}::{output.trade_id}::{output.trial_id}"
-                retrievals = context.load_all(AnnotatingRetrieval)
+                retrievals = DbContext.load_all(AnnotatingRetrieval)
                 filtered_retrievals.extend(
                     [retrieval for retrieval in retrievals if retrieval.retriever.retriever_id == current_retriever_id]
                 )
@@ -189,7 +190,7 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
         """Return the list of inputs specified by the trade list."""
 
         # Refactor with loading by filter
-        inputs = Context.current().load_all(HackathonInput)
+        inputs = DbContext.load_all(HackathonInput)
 
         # Filter inputs by trade_group and trade_ids
         trade_ids_list = self.get_trade_ids_list() if self.trade_ids is not None else None
@@ -203,7 +204,7 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
 
     def get_outputs(self) -> List[HackathonOutput]:
         """Return the list of outputs (each with its score)."""
-        outputs = Context.current().load_all(HackathonOutput)
+        outputs = DbContext.load_all(HackathonOutput)
         result = [x for x in outputs if x.solution.solution_id == self.solution_id]
         result = sorted(result, key=lambda x: int(x.trade_id))
         return result
@@ -222,14 +223,14 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
             entry_text=entry_text,
             status="Pending",
         )
-        Context.current().save_one(output_)
+        DbContext.save_one(output_)
 
     def score_trial_output(self, trade_id: str, trial_id: str) -> None:
 
         context = Context.current()
         info_msg = f"Scoring trade_id={trade_id} trial_id={trial_id} for {self.solution_id}"
         log_message = LogMessage(level="Info", message=info_msg)
-        context.save_one(log_message)
+        DbContext.save_one(log_message)
 
         if self.is_cancelled(self.solution_id):
             raise UserError(f"Scoring for the solution {self.solution_id} has been cancelled.")
@@ -240,7 +241,7 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
             trade_id=trade_id,
             trial_id=trial_id,
         )
-        output_ = context.load_one(HackathonOutput, output_key)
+        output_ = DbContext.load_one(HackathonOutput, output_key)
 
         if output_.status == "Cancelled":
             raise UserError(f"Scoring for this output has been cancelled. Change status to Pending to rerun.")
@@ -251,14 +252,14 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
 
         # Mark as running
         output_.status = "Running"
-        Context.current().save_one(output_)
+        DbContext.save_one(output_)
 
         # Run scoring
         self.score_output(output_)
 
         # Mark as completed
         output_.status = "Completed"
-        Context.current().save_one(output_)
+        DbContext.save_one(output_)
 
     def submit_trial_output(self, *, trade_id: str, trial_id: str) -> None:
 
@@ -282,7 +283,7 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
         )
 
         # Save and submit task
-        Context.current().save_one(handler_task)
+        DbContext.save_one(handler_task)
         handler_queue.submit_task(handler_task)
 
     def run_score_one(self) -> None:
@@ -297,12 +298,12 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
         """Cancel the ongoing scoring."""
         if "." in self.solution_id:
             self.status = "Cancelled"
-            Context.current().save_one(self)
+            DbContext.save_one(self)
 
     @classmethod
     def is_cancelled(cls, solution_id: str) -> bool:
         """Check if scoring has been cancelled."""
-        solution = Context.current().load_one(HackathonSolution, HackathonSolutionKey(solution_id=solution_id))
+        solution = DbContext.load_one(HackathonSolution, HackathonSolutionKey(solution_id=solution_id))
         result = solution.status == "Cancelled"
         return result
 
@@ -314,13 +315,13 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
         base_solution_id = self.solution_id.split(".")[0]
 
         # Copy solution under a new name for scoring
-        scored_solution = context.load_one(type(self), self.get_key())
+        scored_solution = DbContext.load_one(type(self), self.get_key())
         scored_solution.solution_id = f"{base_solution_id}.{timestamp}"
 
         """Reset the score."""
         scored_solution.status = "Running"
         scored_solution.trial_count = str(trial_count)
-        Context.current().save_one(scored_solution)
+        DbContext.save_one(scored_solution)
 
         # Save outputs
         for trial_index in range(trial_count):
@@ -338,22 +339,22 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
 
         # Compare solution outputs with expected outputs and save HackathonScoreItems for each pair
         # scored_solution.status = "Analyzing"
-        # Context.current().save_one(scored_solution)
+        # DbContext.save_one(scored_solution)
         # scored_solution.calculate()
 
         # Save scoring object with total score
         scored_solution.status = "Completed"
-        context.save_one(scored_solution)
+        DbContext.save_one(scored_solution)
 
     def run_analyze(self):
         # Compare solution outputs with expected outputs and save HackathonScoreItems for each pair
         self.status = "Analyzing"
-        Context.current().save_one(self)
+        DbContext.save_one(self)
         self.calculate()
 
         # Save scoring object with total score
         self.status = "Completed"
-        Context.current().save_one(self)
+        DbContext.save_one(self)
 
     def get_score_item(
         self, input_key: HackathonInputKey, actual_output: HackathonOutput, expected_output: HackathonOutput
@@ -447,14 +448,14 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
                     trial_id=trial_id,
                 )
 
-                actual_output = context.load_one(HackathonOutput, actual_output_key)
+                actual_output = DbContext.load_one(HackathonOutput, actual_output_key)
                 # while actual_output.status != "Completed":
                 #    time.sleep(1)
-                #   actual_output = context.load_one(HackathonOutput, actual_output_key)
+                #   actual_output = DbContext.load_one(HackathonOutput, actual_output_key)
 
                 # Create a scoring item by comparing actual and expected outputs
                 score_item = self.get_score_item(input_key, actual_output, expected_output)
-                Context.current().save_one(score_item)
+                DbContext.save_one(score_item)
 
                 # Sum up scores
                 score += len(score_item.matched_fields)
@@ -474,7 +475,7 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
         # Calculate scoring statistics
         self.calculate_statistics()
         self.status = "Completed"
-        context.save_one(self)
+        DbContext.save_one(self)
 
     @staticmethod
     def _compare_as_dates(source_date_text: str, target_date_text: str) -> bool:
@@ -486,7 +487,7 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
             target_date_entry = DateEntry(text=target_date_text)
             target_date_entry.run_generate()
         except Exception as e:
-            Context.current().save_one(
+            DbContext.save_one(
                 LogMessage(
                     level="Info",
                     message=f"An error during {source_date_text} "
@@ -507,7 +508,7 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
             target_number_entry = NumberEntry(text=target_number_text)
             target_number_entry.run_generate()
         except Exception as e:
-            Context.current().save_one(
+            DbContext.save_one(
                 LogMessage(
                     level="Info",
                     message=f"An error during {source_number_text} "
@@ -528,7 +529,7 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
             )
 
         context = Context.current()
-        scoring_items = context.load_all(HackathonScoreItem)
+        scoring_items = DbContext.load_all(HackathonScoreItem)
         filtered_scoring_items = [item for item in scoring_items if item.solution == self.get_key()]
         if len(filtered_scoring_items) == 0:
             raise UserError("Heatmap will be generated after running Analyze.")
@@ -597,7 +598,7 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
         inputs = self.get_inputs()
 
         # Load all hackathon outputs
-        all_outputs = context.load_all(HackathonOutput)
+        all_outputs = DbContext.load_all(HackathonOutput)
 
         # Identify fields to compare, excluding key fields and 'entry_text'
         first_output = all_outputs[0]
@@ -650,7 +651,7 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
                 setattr(statistics, field_name, field_statistics)
 
             # Save and collect the statistics object
-            context.save_one(statistics)
+            DbContext.save_one(statistics)
             all_statistics.append(statistics)
 
         all_statistics = sorted(all_statistics, key=lambda x: int(x.trade_id))

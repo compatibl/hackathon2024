@@ -15,6 +15,7 @@
 from dataclasses import dataclass
 from typing import Dict
 from cl.runtime import Context
+from cl.runtime.context.db_context import DbContext
 from cl.runtime.context.trial_context import TrialContext
 from cl.runtime.log.exceptions.user_error import UserError
 from cl.runtime.primitive.float_util import FloatUtil
@@ -80,15 +81,15 @@ class AnnotationSolution(HackathonSolution):
             notional.run_generate()
 
             if notional_amount_entry_key := notional.amount:
-                notional_amount_entry = context.load_one(NumberEntry, notional_amount_entry_key)
+                notional_amount_entry = DbContext.load_one(NumberEntry, notional_amount_entry_key)
                 notional_amount_entry.run_generate()
                 notional_amount = notional_amount_entry.value
 
             if notional_currency_entry_key := notional.currency:
-                notional_currency_entry = context.load_one(CcyEntry, notional_currency_entry_key)
+                notional_currency_entry = DbContext.load_one(CcyEntry, notional_currency_entry_key)
 
                 if notional_currency_entry_currency_key := notional_currency_entry.currency:
-                    notional_currency_entry_currency = context.load_one(CcyKey, notional_currency_entry_currency_key)
+                    notional_currency_entry_currency = DbContext.load_one(CcyKey, notional_currency_entry_currency_key)
                     notional_currency = notional_currency_entry_currency.iso_code
 
         return notional_amount, notional_currency
@@ -190,7 +191,7 @@ class AnnotationSolution(HackathonSolution):
                 currency = CcyEntry(text=extracted_currency)
                 currency.run_generate()
                 if notional_currency_entry_currency_key := currency.currency:
-                    notional_currency_entry_currency = Context.current().load_one(
+                    notional_currency_entry_currency = DbContext.load_one(
                         CcyKey, notional_currency_entry_currency_key
                     )
                     entry_dict["currency"] = notional_currency_entry_currency.iso_code
@@ -303,7 +304,7 @@ class AnnotationSolution(HackathonSolution):
                     ),
                 )
                 retriever.init_all()
-                Context.current().save_one(retriever)
+                DbContext.save_one(retriever)
 
                 trade_parameters = self._retrieve_trade_parameters(retriever, output_.entry_text)
 

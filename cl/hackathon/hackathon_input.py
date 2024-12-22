@@ -16,6 +16,7 @@ from dataclasses import dataclass
 from typing import Final
 from cl.runtime import Context
 from cl.runtime import RecordMixin
+from cl.runtime.context.db_context import DbContext
 from cl.runtime.records.dataclasses_extensions import missing
 from cl.hackathon.hackathon_input_key import HackathonInputKey
 from cl.hackathon.hackathon_output import HackathonOutput
@@ -42,5 +43,5 @@ class HackathonInput(HackathonInputKey, RecordMixin[HackathonInputKey]):
             trade_id=self.trade_id,
             trial_id="0",
         )
-        expected_output = Context.current().load_one(HackathonOutput, expected_output_key)
+        expected_output = DbContext.load_one(HackathonOutput, expected_output_key)
         return expected_output

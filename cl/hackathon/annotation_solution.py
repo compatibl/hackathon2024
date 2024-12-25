@@ -73,7 +73,6 @@ class AnnotationSolution(HackathonSolution):
     def _extract_notional(self, retriever: AnnotatingRetriever, input_description: str, leg_type: str) -> (float, str):
         notional_amount = None
         notional_currency = None
-        context = Context.current()
 
         param_description = self.notional_description + f" for the {leg_type}"
         if extracted_notional := retriever.retrieve(input_text=input_description, param_description=param_description):

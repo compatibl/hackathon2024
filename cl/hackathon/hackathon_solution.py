@@ -147,8 +147,6 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
         """Return the list of used annotating retrievals."""
 
         if type(self).__name__ == "AnnotationSolution":  # TODO: Refactor
-            context = Context.current()
-
             filtered_retrievals = []
             for output in self.get_outputs():
                 current_retriever_id = f"{self.solution_id}::{self.trade_group}::{output.trade_id}::{output.trial_id}"
@@ -227,7 +225,6 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
 
     def score_trial_output(self, trade_id: str, trial_id: str) -> None:
 
-        context = Context.current()
         info_msg = f"Scoring trade_id={trade_id} trial_id={trial_id} for {self.solution_id}"
         log_message = LogMessage(level="Info", message=info_msg)
         DbContext.save_one(log_message)
@@ -310,7 +307,6 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
     def _run_score(self, trial_count: int) -> None:
         """Perform scoring."""
 
-        context = Context.current()
         timestamp = Timestamp.create()
         base_solution_id = self.solution_id.split(".")[0]
 
@@ -418,7 +414,6 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
         """Calculate scoring info and record to self."""
 
         # Get solution inputs
-        context = Context.current()
         inputs = self.get_inputs()
 
         # Set initial values of scoring fields
@@ -528,7 +523,6 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
                 "These solutions have identifiers that end with a timestamp."
             )
 
-        context = Context.current()
         scoring_items = DbContext.load_all(HackathonScoreItem)
         filtered_scoring_items = [item for item in scoring_items if item.solution == self.get_key()]
         if len(filtered_scoring_items) == 0:
@@ -594,7 +588,6 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
         """Generate scoring statistics for a hackathon solution."""
 
         # Get solution inputs
-        context = Context.current()
         inputs = self.get_inputs()
 
         # Load all hackathon outputs

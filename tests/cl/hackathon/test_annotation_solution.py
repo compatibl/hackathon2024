@@ -23,11 +23,10 @@ from cl.hackathon.annotation_solution import AnnotationSolution
 def test_annotation_solution():
     """Test AnnotationSolution preload."""
 
-    with TestingContext() as context:
-        # Load AnnotationSolution records
-        solutions = DbContext.load_all(AnnotationSolution)
-        for solution in solutions:
-            pass  # TODO: Perform scoring and record the output
+    # Load AnnotationSolution records
+    solutions = DbContext.load_all(AnnotationSolution)
+    for solution in solutions:
+        pass  # TODO: Perform scoring and record the output
 
 
 if __name__ == "__main__":

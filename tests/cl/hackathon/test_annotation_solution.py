@@ -15,7 +15,6 @@
 import pytest
 
 from cl.runtime.context.db_context import DbContext
-from cl.runtime.context.testing_context import TestingContext
 from cl.convince.context.llm_context import LlmContext
 from cl.hackathon.annotation_solution import AnnotationSolution
 

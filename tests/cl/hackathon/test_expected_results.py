@@ -15,7 +15,6 @@
 import pytest
 
 from cl.runtime.context.db_context import DbContext
-from cl.runtime.context.testing_context import TestingContext
 from cl.runtime.log.exceptions.user_error import UserError
 from cl.runtime.settings.preload_settings import PreloadSettings
 from cl.convince.context.llm_context import LlmContext

@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from dataclasses import dataclass
-from cl.runtime import Context
 from cl.runtime.context.db_context import DbContext
 from cl.runtime.context.trial_context import TrialContext
 from cl.runtime.log.exceptions.user_error import UserError

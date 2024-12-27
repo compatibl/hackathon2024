@@ -17,9 +17,9 @@ import pytest
 from cl.runtime.context.db_context import DbContext
 from cl.convince.context.llm_context import LlmContext
 from cl.hackathon.annotation_solution import AnnotationSolution
+from cl.runtime.testing.pytest.pytest_fixtures import testing_db
 
-
-def test_annotation_solution():
+def test_annotation_solution(testing_db):
     """Test AnnotationSolution preload."""
 
     # Load AnnotationSolution records

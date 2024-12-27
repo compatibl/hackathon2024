@@ -22,9 +22,9 @@ from cl.hackathon.expected_results import ExpectedResults
 from cl.hackathon.hackathon_input import HackathonInput
 from cl.hackathon.hackathon_output import HackathonOutput
 from cl.hackathon.hackathon_output_key import HackathonOutputKey
+from cl.runtime.testing.pytest.pytest_fixtures import testing_db
 
-
-def test_expected_results():
+def test_expected_results(testing_db):
     """Test ExpectedResults preload."""
     with LlmContext():
         # Save records from preload directory to DB and execute run_configure on all preloaded Config records

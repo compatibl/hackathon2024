@@ -189,9 +189,7 @@ class AnnotationSolution(HackathonSolution):
                 currency = CcyEntry(text=extracted_currency)
                 currency.run_generate()
                 if notional_currency_entry_currency_key := currency.currency:
-                    notional_currency_entry_currency = DbContext.load_one(
-                        CcyKey, notional_currency_entry_currency_key
-                    )
+                    notional_currency_entry_currency = DbContext.load_one(CcyKey, notional_currency_entry_currency_key)
                     entry_dict["currency"] = notional_currency_entry_currency.iso_code
             except Exception as e:
                 entry_dict["currency"] = entry_error_message_template.format(

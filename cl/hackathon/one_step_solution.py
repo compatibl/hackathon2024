@@ -42,8 +42,7 @@ class OneStepSolution(HackathonSolution):
         with TrialContext(trial_id=str(output_.trial_id)):
             with LlmContext(full_llm=self.llm):
                 # Load the full LLM specified by the context
-                llm_context = LlmContext.current()
-                llm = DbContext.load_one(Llm, llm_context.full_llm)
+                llm = DbContext.load_one(Llm, LlmContext.get_full_llm())
                 query = self.prompt.format(input_text=output_.entry_text)
 
                 output = llm.completion(query)

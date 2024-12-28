@@ -26,47 +26,47 @@ from cl.hackathon.hackathon_output_key import HackathonOutputKey
 
 def test_expected_results(testing_db):
     """Test ExpectedResults preload."""
-    with LlmContext():
-        # Save records from preload directory to DB and execute run_configure on all preloaded Config records
-        PreloadSettings.instance().save_and_configure()
 
-        # Ensure there is only one ExpectedResults record
-        solutions = list(DbContext.load_all(ExpectedResults))
-        if len(solutions) == 1:
-            expected_results = solutions[0]
-        elif len(solutions) == 0:
-            raise UserError("No ExpectedResults records found, cannot proceed with scoring.")
-        else:
-            raise UserError(f"{len(solutions)} ExpectedResults records are found, only one should be present.")
+    # Save records from preload directory to DB and execute run_configure on all preloaded Config records
+    PreloadSettings.instance().save_and_configure()
 
-        # Check its identifier
-        if expected_results.solution_id != "ExpectedResults":
-            raise UserError(f"ExpectedResults identifier is '{expected_results.solution_id}', must be 'Expected'.")
+    # Ensure there is only one ExpectedResults record
+    solutions = list(DbContext.load_all(ExpectedResults))
+    if len(solutions) == 1:
+        expected_results = solutions[0]
+    elif len(solutions) == 0:
+        raise UserError("No ExpectedResults records found, cannot proceed with scoring.")
+    else:
+        raise UserError(f"{len(solutions)} ExpectedResults records are found, only one should be present.")
 
-        # Get inputs and sort by trade_id
-        inputs = DbContext.load_all(HackathonInput)
-        inputs = [input for input in inputs if input.trade_group == expected_results.trade_group]
-        inputs = sorted(inputs, key=lambda item: item.trade_id)
+    # Check its identifier
+    if expected_results.solution_id != "ExpectedResults":
+        raise UserError(f"ExpectedResults identifier is '{expected_results.solution_id}', must be 'Expected'.")
 
-        # Ensure there is an output for each input assigned to the expected solution
-        for input in inputs:
-            # Check if the output is present
-            output_key = HackathonOutputKey(
-                solution=expected_results.get_key(),
-                trade_group=input.trade_group,
-                trade_id=input.trade_id,
-                trial_id="0",
+    # Get inputs and sort by trade_id
+    inputs = DbContext.load_all(HackathonInput)
+    inputs = [input for input in inputs if input.trade_group == expected_results.trade_group]
+    inputs = sorted(inputs, key=lambda item: item.trade_id)
+
+    # Ensure there is an output for each input assigned to the expected solution
+    for input in inputs:
+        # Check if the output is present
+        output_key = HackathonOutputKey(
+            solution=expected_results.get_key(),
+            trade_group=input.trade_group,
+            trade_id=input.trade_id,
+            trial_id="0",
+        )
+        output = DbContext.load_one(HackathonOutput, output_key, is_record_optional=True)
+        if output is None:
+            raise UserError(f"Expected output record is not found for output key {output_key}")
+
+        # Perform additional checks
+        if input.entry_text.strip().lower() != output.entry_text.strip().lower():
+            raise UserError(
+                f"Entry text does not match between HackathonInput and HackathonOutput records "
+                f"for trade_id='{input.trade_id}'"
             )
-            output = DbContext.load_one(HackathonOutput, output_key, is_record_optional=True)
-            if output is None:
-                raise UserError(f"Expected output record is not found for output key {output_key}")
-
-            # Perform additional checks
-            if input.entry_text.strip().lower() != output.entry_text.strip().lower():
-                raise UserError(
-                    f"Entry text does not match between HackathonInput and HackathonOutput records "
-                    f"for trade_id='{input.trade_id}'"
-                )
 
 
 if __name__ == "__main__":

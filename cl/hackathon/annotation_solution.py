@@ -288,7 +288,7 @@ class AnnotationSolution(HackathonSolution):
             with LlmContext(full_llm=self.llm):
                 # Get combined trial_id from all previous 'with TrialContext(...)' clauses
                 # and add it to the end of retriever_id
-                trial_id = TrialContext.get_trial_id()
+                trial_id = TrialContext.get_trial().trial_id
                 # TODO: Move to automatic generation of retriever_id
                 retriever_id = f"{self.solution_id}::{self.trade_group}::{output_.trade_id}::{trial_id}"
                 retriever = AnnotatingRetriever(

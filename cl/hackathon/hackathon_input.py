@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from typing import Final
 from cl.runtime import RecordMixin
 from cl.runtime.contexts.db_context import DbContext
-from cl.runtime.records.dataclasses_extensions import missing
+from cl.runtime.records.dataclasses_extensions import required
 from cl.hackathon.hackathon_input_key import HackathonInputKey
 from cl.hackathon.hackathon_output import HackathonOutput
 from cl.hackathon.hackathon_output_key import HackathonOutputKey
@@ -29,7 +29,7 @@ EXPECTED_RESULTS_SOLUTION_ID: Final[str] = "ExpectedResults"
 class HackathonInput(HackathonInputKey, RecordMixin[HackathonInputKey]):
     """Input text for a single hackathon trade."""
 
-    entry_text: str = missing()
+    entry_text: str = required()
     """Trade entry text for the specified trade."""
 
     def get_key(self) -> HackathonInputKey:

@@ -14,7 +14,7 @@
 
 from dataclasses import dataclass
 from typing import Type
-from cl.runtime.records.dataclasses_extensions import missing
+from cl.runtime.records.dataclasses_extensions import required
 from cl.runtime.records.key_mixin import KeyMixin
 
 
@@ -22,7 +22,7 @@ from cl.runtime.records.key_mixin import KeyMixin
 class HackathonSolutionKey(KeyMixin):
     """Define parameters to convert trade entry text to the trade and perform scoring."""
 
-    solution_id: str = missing()
+    solution_id: str = required()
     """Unique hackathon solution identifier."""
 
     @classmethod

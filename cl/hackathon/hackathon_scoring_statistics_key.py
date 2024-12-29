@@ -15,7 +15,7 @@
 from dataclasses import dataclass
 from dataclasses import field
 from typing import Type
-from cl.runtime.records.dataclasses_extensions import missing
+from cl.runtime.records.dataclasses_extensions import required
 from cl.runtime.records.key_mixin import KeyMixin
 from cl.hackathon.hackathon_solution_key import HackathonSolutionKey
 
@@ -24,13 +24,13 @@ from cl.hackathon.hackathon_solution_key import HackathonSolutionKey
 class HackathonScoringStatisticsKey(KeyMixin):
     """Output fields for a single hackathon trade obtained using the specified solution."""
 
-    solution: HackathonSolutionKey = missing()
+    solution: HackathonSolutionKey = required()
     """Solution that generated the output."""
 
-    trade_group: str = missing()
+    trade_group: str = required()
     """Trade group for which trade_id is defined (trade_id is unique within the group)."""
 
-    trade_id: str = missing()
+    trade_id: str = required()
     """Unique trade identifier within the trade group."""
 
     @classmethod

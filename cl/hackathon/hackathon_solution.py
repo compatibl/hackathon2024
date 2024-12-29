@@ -32,7 +32,7 @@ from cl.runtime.log.log_message import LogMessage
 from cl.runtime.plots.heat_map_plot import HeatMapPlot
 from cl.runtime.primitive.case_util import CaseUtil
 from cl.runtime.primitive.timestamp import Timestamp
-from cl.runtime.records.dataclasses_extensions import missing
+from cl.runtime.records.dataclasses_extensions import required
 from cl.runtime.routers.tasks.run_response_item import handler_queue
 from cl.runtime.tasks.instance_method_task import InstanceMethodTask
 from cl.convince.llms.llm_key import LlmKey
@@ -72,10 +72,10 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
     score_pct: str | None = None
     """Score in percentage points."""
 
-    llm: LlmKey = missing()
+    llm: LlmKey = required()
     """LLM that will be used to generate the output."""
 
-    trade_group: str = missing()
+    trade_group: str = required()
     """Trade group for which scoring will be performed."""
 
     trade_ids: str | None = None

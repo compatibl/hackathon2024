@@ -15,7 +15,7 @@
 from dataclasses import dataclass
 from typing import Type
 from typing_extensions import Self
-from cl.runtime.records.dataclasses_extensions import missing
+from cl.runtime.records.dataclasses_extensions import required
 from cl.runtime.records.key_mixin import KeyMixin
 
 
@@ -23,10 +23,10 @@ from cl.runtime.records.key_mixin import KeyMixin
 class HackathonInputKey(KeyMixin):
     """Input text for a single hackathon trade."""
 
-    trade_group: str = missing()
+    trade_group: str = required()
     """Trade group for which trade_id is defined (trade_id is unique within the group)."""
 
-    trade_id: str = missing()
+    trade_id: str = required()
     """Unique trade identifier within the trade group."""
 
     @classmethod

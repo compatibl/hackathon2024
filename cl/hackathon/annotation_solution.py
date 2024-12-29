@@ -18,7 +18,7 @@ from cl.runtime.contexts.db_context import DbContext
 from cl.runtime.contexts.trial_context import TrialContext
 from cl.runtime.log.exceptions.user_error import UserError
 from cl.runtime.primitive.float_util import FloatUtil
-from cl.runtime.records.dataclasses_extensions import missing
+from cl.runtime.records.dataclasses_extensions import required
 from cl.convince.contexts.llm_context import LlmContext
 from cl.convince.prompts.formatted_prompt import FormattedPrompt
 from cl.convince.retrievers.annotating_retriever import AnnotatingRetriever
@@ -39,7 +39,7 @@ from cl.hackathon.hackathon_solution import HackathonSolution
 class AnnotationSolution(HackathonSolution):
     """Solution based on brace annotation of the input."""
 
-    parameter_annotation_prompt: str = missing()
+    parameter_annotation_prompt: str = required()
     """Prompt to surround the specified parameter in curly braces."""
 
     maturity_description: str = "Either maturity date as a date, or tenor (length) as the number of years and/or months"

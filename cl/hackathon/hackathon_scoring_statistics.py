@@ -14,7 +14,7 @@
 
 from dataclasses import dataclass
 from cl.runtime import RecordMixin
-from cl.runtime.records.dataclasses_extensions import missing
+from cl.runtime.records.dataclasses_extensions import required
 from cl.hackathon.hackathon_scoring_statistics_key import HackathonScoringStatisticsKey
 
 
@@ -22,7 +22,7 @@ from cl.hackathon.hackathon_scoring_statistics_key import HackathonScoringStatis
 class HackathonScoringStatistics(HackathonScoringStatisticsKey, RecordMixin[HackathonScoringStatisticsKey]):
     """Statistics of hackathon scoring for a single hackathon trade calculated using the specified solution."""
 
-    entry_text: str = missing()
+    entry_text: str = required()
     """Trade entry text for the specified trade."""
 
     effective_date: str | None = None

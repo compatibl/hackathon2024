@@ -17,7 +17,7 @@ from cl.runtime.contexts.db_context import DbContext
 from cl.runtime.contexts.trial_context import TrialContext
 from cl.runtime.log.exceptions.user_error import UserError
 from cl.runtime.primitive.float_util import FloatUtil
-from cl.runtime.records.dataclasses_extensions import missing
+from cl.runtime.records.dataclasses_extensions import required
 from cl.convince.contexts.llm_context import LlmContext
 from cl.convince.llms.gpt.gpt_llm import GptLlm
 from cl.convince.llms.llm import Llm
@@ -34,7 +34,7 @@ from cl.hackathon.hackathon_solution import HackathonSolution
 class OneStepSolution(HackathonSolution):
     """Solution based on extracting values in one step."""
 
-    prompt: str = missing()
+    prompt: str = required()
     """One step prompt to parse trade."""
 
     def score_output(self, output_: HackathonOutput) -> None:

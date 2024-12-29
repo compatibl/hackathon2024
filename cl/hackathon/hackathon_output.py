@@ -15,7 +15,7 @@
 from dataclasses import dataclass
 from cl.runtime import RecordMixin
 from cl.runtime.log.exceptions.user_error import UserError
-from cl.runtime.records.dataclasses_extensions import missing
+from cl.runtime.records.dataclasses_extensions import required
 from cl.hackathon.hackathon_output_key import HackathonOutputKey
 
 
@@ -26,7 +26,7 @@ class HackathonOutput(HackathonOutputKey, RecordMixin[HackathonOutputKey]):
     status: str | None = None
     """Status of the output."""
 
-    entry_text: str = missing()
+    entry_text: str = required()
     """Trade entry text for the specified trade."""
 
     effective_date: str | None = None

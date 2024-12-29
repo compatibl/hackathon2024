@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from typing import Final
 from cl.runtime import RecordMixin
 from cl.runtime.contexts.db_context import DbContext
-from cl.runtime.records.dataclasses_extensions import required
+from cl.runtime.records.for_dataclasses.extensions import required
 from cl.hackathon.hackathon_input_key import HackathonInputKey
 from cl.hackathon.hackathon_output import HackathonOutput
 from cl.hackathon.hackathon_output_key import HackathonOutputKey

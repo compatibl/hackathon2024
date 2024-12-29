@@ -17,7 +17,7 @@ from cl.runtime.contexts.db_context import DbContext
 from cl.runtime.contexts.trial_context import TrialContext
 from cl.runtime.log.exceptions.user_error import UserError
 from cl.runtime.primitive.float_util import FloatUtil
-from cl.runtime.records.dataclasses_extensions import required
+from cl.runtime.records.for_dataclasses.extensions import required
 from cl.convince.contexts.llm_context import LlmContext
 from cl.convince.llms.gpt.gpt_llm import GptLlm
 from cl.convince.llms.llm import Llm

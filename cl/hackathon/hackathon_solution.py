@@ -32,7 +32,7 @@ from cl.runtime.log.log_message import LogMessage
 from cl.runtime.plots.heat_map_plot import HeatMapPlot
 from cl.runtime.primitive.case_util import CaseUtil
 from cl.runtime.primitive.timestamp import Timestamp
-from cl.runtime.records.dataclasses_extensions import required
+from cl.runtime.records.for_dataclasses.extensions import required
 from cl.runtime.routers.tasks.run_response_item import handler_queue
 from cl.runtime.tasks.instance_method_task import InstanceMethodTask
 from cl.convince.llms.llm_key import LlmKey

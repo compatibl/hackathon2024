@@ -19,7 +19,7 @@ from cl.runtime.records.key_mixin import KeyMixin
 from cl.hackathon.hackathon_solution_key import HackathonSolutionKey
 
 
-@dataclass(slots=True, kw_only=True)
+@dataclass(slots=True)
 class HackathonScoringStatisticsKey(KeyMixin):
     """Output fields for a single hackathon trade obtained using the specified solution."""
 

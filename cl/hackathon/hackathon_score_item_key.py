@@ -21,7 +21,7 @@ from cl.hackathon.hackathon_output_key import HackathonOutputKey
 from cl.hackathon.hackathon_solution_key import HackathonSolutionKey
 
 
-@dataclass(slots=True, kw_only=True)
+@dataclass(slots=True)
 class HackathonScoreItemKey(KeyMixin):
     """Key for class with base scoring info."""
 

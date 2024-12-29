@@ -13,11 +13,11 @@
 # limitations under the License.
 
 import pytest
-from cl.runtime.context.db_context import DbContext
+from cl.runtime.contexts.db_context import DbContext
 from cl.runtime.log.exceptions.user_error import UserError
 from cl.runtime.settings.preload_settings import PreloadSettings
 from cl.runtime.testing.pytest.pytest_fixtures import testing_db
-from cl.convince.context.llm_context import LlmContext
+from cl.convince.contexts.llm_context import LlmContext
 from cl.hackathon.expected_results import ExpectedResults
 from cl.hackathon.hackathon_input import HackathonInput
 from cl.hackathon.hackathon_output import HackathonOutput

@@ -26,7 +26,7 @@ from typing import Tuple
 from typing_extensions import Self
 from cl.runtime import RecordMixin
 from cl.runtime import View
-from cl.runtime.context.db_context import DbContext
+from cl.runtime.contexts.db_context import DbContext
 from cl.runtime.log.exceptions.user_error import UserError
 from cl.runtime.log.log_message import LogMessage
 from cl.runtime.plots.heat_map_plot import HeatMapPlot

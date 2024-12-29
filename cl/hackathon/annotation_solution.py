@@ -14,12 +14,12 @@
 
 from dataclasses import dataclass
 from typing import Dict
-from cl.runtime.context.db_context import DbContext
-from cl.runtime.context.trial_context import TrialContext
+from cl.runtime.contexts.db_context import DbContext
+from cl.runtime.contexts.trial_context import TrialContext
 from cl.runtime.log.exceptions.user_error import UserError
 from cl.runtime.primitive.float_util import FloatUtil
 from cl.runtime.records.dataclasses_extensions import missing
-from cl.convince.context.llm_context import LlmContext
+from cl.convince.contexts.llm_context import LlmContext
 from cl.convince.prompts.formatted_prompt import FormattedPrompt
 from cl.convince.retrievers.annotating_retriever import AnnotatingRetriever
 from cl.convince.retrievers.retrieval import Retrieval

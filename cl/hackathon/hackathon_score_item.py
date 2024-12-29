@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from dataclasses import dataclass
-from dataclasses import field
 from typing import List
 from cl.runtime import RecordMixin
 from cl.runtime.records.dataclasses_extensions import required
@@ -35,13 +34,13 @@ class HackathonScoreItem(HackathonScoreItemKey, RecordMixin[HackathonScoreItemKe
     expected_output: HackathonOutputKey = required()
     """Expected output for input."""
 
-    matched_fields: List[str] = field(default_factory=list)
+    matched_fields: List[str] = required(default_factory=list)
     """List of matched fields."""
 
-    mismatched_fields: List[str] = field(default_factory=list)
+    mismatched_fields: List[str] = required(default_factory=list)
     """List of mismatched fields."""
 
-    error_fields: List[str] = field(default_factory=list)
+    error_fields: List[str] = required(default_factory=list)
     """List of fields recognized as having extraction difficulties."""
 
     def get_key(self):

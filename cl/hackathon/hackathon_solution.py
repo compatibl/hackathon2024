@@ -111,16 +111,13 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
     def get_key(self) -> HackathonSolutionKey:
         return HackathonSolutionKey(solution_id=self.solution_id)
 
-    def init(self) -> Self:
-        """Similar to __init__ but can use fields set after construction, return self to enable method chaining."""
+    def init(self) -> None:
+        """Similar to __init__ but can use fields set after construction."""
 
         is_resulting_solution = "." in self.solution_id
         if not is_resulting_solution:
             if self.trial_count is None:
                 self.trial_count = str(10)
-
-        # Return self to enable method chaining
-        return self
 
     def view_inputs(self) -> List[HackathonInput]:
         """Return the list of inputs specified by the trade list."""

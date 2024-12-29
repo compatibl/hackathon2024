@@ -32,9 +32,6 @@ class ExpectedResults(HackathonSolution):
             "scoring other methods. It does not have a its own scoring method."
         )
 
-    def init(self) -> Self:
-        """Similar to __init__ but can use fields set after construction, return self to enable method chaining."""
+    def init(self) -> None:
+        """Similar to __init__ but can use fields set after construction."""
         self.llm = LlmKey(llm_id="Not required")
-
-        # Return self to enable method chaining
-        return self

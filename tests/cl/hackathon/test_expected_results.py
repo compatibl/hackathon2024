@@ -57,7 +57,7 @@ def test_expected_results(testing_db):
             trade_id=input.trade_id,
             trial_id="0",
         )
-        output = DbContext.load_one(HackathonOutput, output_key, is_record_optional=True)
+        output = DbContext.load_one_or_none(HackathonOutput, output_key)
         if output is None:
             raise UserError(f"Expected output record is not found for output key {output_key}")
 

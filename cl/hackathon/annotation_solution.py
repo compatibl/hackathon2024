@@ -83,7 +83,7 @@ class AnnotationSolution(HackathonSolution):
                 notional_amount_entry.run_generate()
                 notional_amount = notional_amount_entry.value
 
-            if notional_currency_entry_key := notional.currency:
+            if notional_currency_entry_key := notional.ccy:
                 notional_currency_entry = DbContext.load_one(CcyEntry, notional_currency_entry_key)
 
                 if notional_currency_entry_currency_key := notional_currency_entry.currency:

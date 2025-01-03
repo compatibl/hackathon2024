@@ -33,6 +33,7 @@ from cl.runtime.plots.heat_map_plot import HeatMapPlot
 from cl.runtime.primitive.case_util import CaseUtil
 from cl.runtime.primitive.timestamp import Timestamp
 from cl.runtime.records.for_dataclasses.extensions import required
+from cl.runtime.records.type_util import TypeUtil
 from cl.runtime.routers.tasks.run_response_item import handler_queue
 from cl.runtime.tasks.instance_method_task import InstanceMethodTask
 from cl.convince.llms.llm_key import LlmKey
@@ -142,7 +143,7 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
     def view_retrievals(self) -> List[AnnotatingRetrieval]:
         """Return the list of used annotating retrievals."""
 
-        if type(self).__name__ == "AnnotationSolution":  # TODO: Refactor
+        if TypeUtil.name(self) == "AnnotationSolution":  # TODO: Refactor
             filtered_retrievals = []
             for output in self.get_outputs():
                 current_retriever_id = f"{self.solution_id}::{self.trade_group}::{output.trade_id}::{output.trial_id}"
@@ -258,10 +259,10 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
 
         # Get key type based on table in request
         key_type = HackathonSolutionKey
-        key_type_str = f"{key_type.__module__}.{key_type.__name__}"
+        key_type_str = f"{key_type.__module__}.{TypeUtil.name(key_type)}"
         method_name = "score_trial_output"
         method_name_pascal_case = CaseUtil.snake_to_pascal_case(method_name)
-        label = f"{key_type.__name__};{self.solution_id};{method_name_pascal_case}"
+        label = f"{TypeUtil.name(key_type)};{self.solution_id};{method_name_pascal_case}"
         handler_task = InstanceMethodTask(
             label=label,
             queue=handler_queue.get_key(),

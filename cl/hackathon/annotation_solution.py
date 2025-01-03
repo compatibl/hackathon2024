@@ -28,7 +28,7 @@ from cl.tradeentry.entries.ccy_entry import CcyEntry
 from cl.tradeentry.entries.date_entry import DateEntry
 from cl.tradeentry.entries.date_or_tenor_entry import DateOrTenorEntry
 from cl.tradeentry.entries.number_entry import NumberEntry
-from cl.tradeentry.entries.pay_freq_months_entry import PayFreqMonthsEntry
+from cl.tradeentry.entries.pay_freq_entry import PayFreqEntry
 from cl.tradeentry.trades.ccy_key import CcyKey
 from cl.hackathon.hackathon_input import HackathonInput
 from cl.hackathon.hackathon_output import HackathonOutput
@@ -119,7 +119,7 @@ class AnnotationSolution(HackathonSolution):
 
         if extracted_freq_months is not None:
             try:
-                freq_months = PayFreqMonthsEntry(text=extracted_freq_months)
+                freq_months = PayFreqEntry(text=extracted_freq_months)
                 freq_months.run_generate()
                 entry_dict["freq_months"] = (
                     str(FloatUtil.to_int_or_float(v)) if (v := freq_months.pay_freq_months) else None

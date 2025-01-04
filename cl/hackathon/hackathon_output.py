@@ -14,7 +14,6 @@
 
 from dataclasses import dataclass
 from cl.runtime import RecordMixin
-from cl.runtime.log.exceptions.user_error import UserError
 from cl.runtime.records.for_dataclasses.extensions import required
 from cl.hackathon.hackathon_output_key import HackathonOutputKey
 

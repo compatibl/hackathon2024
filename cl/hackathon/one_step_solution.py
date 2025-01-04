@@ -15,17 +15,13 @@
 from dataclasses import dataclass
 from cl.runtime.contexts.db_context import DbContext
 from cl.runtime.contexts.trial_context import TrialContext
-from cl.runtime.log.exceptions.user_error import UserError
 from cl.runtime.primitive.float_util import FloatUtil
 from cl.runtime.records.for_dataclasses.extensions import required
 from cl.convince.contexts.llm_context import LlmContext
-from cl.convince.llms.gpt.gpt_llm import GptLlm
 from cl.convince.llms.llm import Llm
-from cl.convince.llms.llm_key import LlmKey
 from cl.convince.retrievers.retriever_util import RetrieverUtil
 from cl.tradeentry.entries.date_entry import DateEntry
 from cl.tradeentry.entries.number_entry import NumberEntry
-from cl.hackathon.hackathon_input import HackathonInput
 from cl.hackathon.hackathon_output import HackathonOutput
 from cl.hackathon.hackathon_solution import HackathonSolution
 

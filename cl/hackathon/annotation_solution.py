@@ -16,7 +16,6 @@ from dataclasses import dataclass
 from typing import Dict
 from cl.runtime.contexts.db_context import DbContext
 from cl.runtime.contexts.trial_context import TrialContext
-from cl.runtime.log.exceptions.user_error import UserError
 from cl.runtime.primitive.float_util import FloatUtil
 from cl.runtime.records.for_dataclasses.extensions import required
 from cl.convince.contexts.llm_context import LlmContext
@@ -30,7 +29,6 @@ from cl.tradeentry.entries.date_or_tenor_entry import DateOrTenorEntry
 from cl.tradeentry.entries.number_entry import NumberEntry
 from cl.tradeentry.entries.pay_freq_entry import PayFreqEntry
 from cl.tradeentry.trades.ccy_key import CcyKey
-from cl.hackathon.hackathon_input import HackathonInput
 from cl.hackathon.hackathon_output import HackathonOutput
 from cl.hackathon.hackathon_solution import HackathonSolution
 

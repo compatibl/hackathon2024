@@ -297,7 +297,7 @@ class AnnotationSolution(HackathonSolution):
                         template=self.parameter_annotation_prompt,
                     ),
                 )
-                retriever.init_all()
+                retriever.build()
                 DbContext.save_one(retriever)
 
                 trade_parameters = self._retrieve_trade_parameters(retriever, output_.entry_text)

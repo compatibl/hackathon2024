@@ -470,9 +470,9 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
         try:
             if source_date_text.strip() == target_date_text.strip():
                 return True
-            source_date_entry = DateEntry(text=source_date_text)
+            source_date_entry = DateEntry(text=source_date_text).build()
             source_date_entry.run_generate()
-            target_date_entry = DateEntry(text=target_date_text)
+            target_date_entry = DateEntry(text=target_date_text).build()
             target_date_entry.run_generate()
         except Exception as e:
             DbContext.save_one(
@@ -491,9 +491,9 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
         try:
             if source_number_text.strip() == target_number_text.strip():
                 return True
-            source_number_entry = NumberEntry(text=source_number_text)
+            source_number_entry = NumberEntry(text=source_number_text).build()
             source_number_entry.run_generate()
-            target_number_entry = NumberEntry(text=target_number_text)
+            target_number_entry = NumberEntry(text=target_number_text).build()
             target_number_entry.run_generate()
         except Exception as e:
             DbContext.save_one(

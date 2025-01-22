@@ -73,7 +73,7 @@ class AnnotationSolution(HackathonSolution):
 
         param_description = self.notional_description + f" for the {leg_type}"
         if extracted_notional := retriever.retrieve(input_text=input_description, param_description=param_description):
-            notional = AmountEntry(text=extracted_notional)
+            notional = AmountEntry(text=extracted_notional).build()
             notional.run_generate()
 
             if notional_amount_entry_key := notional.amount:
@@ -117,7 +117,7 @@ class AnnotationSolution(HackathonSolution):
 
         if extracted_freq_months is not None:
             try:
-                freq_months = PayFreqEntry(text=extracted_freq_months)
+                freq_months = PayFreqEntry(text=extracted_freq_months).build()
                 freq_months.run_generate()
                 entry_dict["freq_months"] = (
                     str(FloatUtil.to_int_or_float(v)) if (v := freq_months.pay_freq_months) else None
@@ -147,7 +147,7 @@ class AnnotationSolution(HackathonSolution):
 
         if extracted_float_spread is not None:
             try:
-                float_spread = NumberEntry(text=extracted_float_spread)
+                float_spread = NumberEntry(text=extracted_float_spread).build()
                 float_spread.run_generate()
                 entry_dict["float_spread"] = str(FloatUtil.to_int_or_float(v)) if (v := float_spread.value) else None
             except Exception as e:
@@ -184,7 +184,7 @@ class AnnotationSolution(HackathonSolution):
 
         if extracted_currency is not None:
             try:
-                currency = CcyEntry(text=extracted_currency)
+                currency = CcyEntry(text=extracted_currency).build()
                 currency.run_generate()
                 if notional_currency_entry_currency_key := currency.currency:
                     notional_currency_entry_currency = DbContext.load_one(CcyKey, notional_currency_entry_currency_key)
@@ -205,7 +205,7 @@ class AnnotationSolution(HackathonSolution):
 
         if extracted_fixed_rate is not None:
             try:
-                fixed_rate = NumberEntry(text=extracted_fixed_rate)
+                fixed_rate = NumberEntry(text=extracted_fixed_rate).build()
                 fixed_rate.run_generate()
                 entry_dict["fixed_rate"] = str(FloatUtil.to_int_or_float(v)) if (v := fixed_rate.value) else None
             except Exception as e:
@@ -242,7 +242,7 @@ class AnnotationSolution(HackathonSolution):
 
         if extracted_maturity is not None:
             try:
-                maturity = DateOrTenorEntry(text=extracted_maturity)
+                maturity = DateOrTenorEntry(text=extracted_maturity).build()
                 maturity.run_generate()
                 if date := maturity.date:
                     trade_parameters["maturity_date"] = date
@@ -269,7 +269,7 @@ class AnnotationSolution(HackathonSolution):
 
         if extracted_effective_date is not None:
             try:
-                effective_date = DateEntry(text=extracted_effective_date)
+                effective_date = DateEntry(text=extracted_effective_date).build()
                 effective_date.run_generate()
                 if date := effective_date.date:
                     trade_parameters["effective_date"] = date
@@ -282,8 +282,8 @@ class AnnotationSolution(HackathonSolution):
 
     def score_output(self, output_: HackathonOutput) -> None:
 
-        with TrialContext(trial_id=str(output_.trial_id)):
-            with LlmContext(full_llm=self.llm):
+        with TrialContext(trial_id=str(output_.trial_id)).build():
+            with LlmContext(full_llm=self.llm).build():
                 # Get combined trial_id from all previous 'with TrialContext(...)' clauses
                 # and add it to the end of retriever_id
                 trial_id = TrialContext.get_trial()

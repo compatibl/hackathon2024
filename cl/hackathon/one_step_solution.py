@@ -35,8 +35,8 @@ class OneStepSolution(HackathonSolution):
 
     def score_output(self, output_: HackathonOutput) -> None:
 
-        with TrialContext(trial_id=str(output_.trial_id)):
-            with LlmContext(full_llm=self.llm):
+        with TrialContext(trial_id=str(output_.trial_id)).build():
+            with LlmContext(full_llm=self.llm).build():
                 # Load the full LLM specified by the context
                 llm = DbContext.load_one(Llm, LlmContext.get_full_llm())
                 query = self.prompt.format(input_text=output_.entry_text)
@@ -50,7 +50,7 @@ class OneStepSolution(HackathonSolution):
                     try:
                         effective_date = json_output.get("effective_date")
                         if effective_date is not None:
-                            effective_date = DateEntry(text=str(effective_date))
+                            effective_date = DateEntry(text=str(effective_date)).build()
                             effective_date.run_generate()
                             output_.effective_date = effective_date.date
                     except Exception as e:
@@ -60,7 +60,7 @@ class OneStepSolution(HackathonSolution):
                     try:
                         maturity_date = json_output.get("maturity_date")
                         if maturity_date is not None:
-                            maturity_date = DateEntry(text=str(maturity_date))
+                            maturity_date = DateEntry(text=str(maturity_date)).build()
                             maturity_date.run_generate()
                             output_.maturity_date = maturity_date.date
                     except Exception as e:
@@ -72,7 +72,7 @@ class OneStepSolution(HackathonSolution):
                         if isinstance(tenor_years, int):
                             output_.tenor_years = str(FloatUtil.to_int_or_float(tenor_years))
                         elif tenor_years is not None:
-                            tenor_years = NumberEntry(text=str(tenor_years))
+                            tenor_years = NumberEntry(text=str(tenor_years)).build()
                             tenor_years.run_generate()
                             output_.tenor_years = str(FloatUtil.to_int_or_float(tenor_years.value))
                     except Exception as e:
@@ -84,7 +84,7 @@ class OneStepSolution(HackathonSolution):
                         if isinstance(pay_leg_notional, float):
                             output_.pay_leg_notional = str(FloatUtil.to_int_or_float(pay_leg_notional))
                         elif pay_leg_notional is not None:
-                            pay_leg_notional = NumberEntry(text=str(pay_leg_notional))
+                            pay_leg_notional = NumberEntry(text=str(pay_leg_notional)).build()
                             pay_leg_notional.run_generate()
                             output_.pay_leg_notional = str(FloatUtil.to_int_or_float(pay_leg_notional.value))
                     except Exception as e:
@@ -104,7 +104,7 @@ class OneStepSolution(HackathonSolution):
                         if isinstance(pay_leg_freq_months, int):
                             output_.pay_leg_freq_months = str(FloatUtil.to_int_or_float(pay_leg_freq_months))
                         elif pay_leg_freq_months is not None:
-                            pay_leg_freq_months_entry = NumberEntry(text=str(pay_leg_freq_months))
+                            pay_leg_freq_months_entry = NumberEntry(text=str(pay_leg_freq_months)).build()
                             pay_leg_freq_months_entry.run_generate()
                             output_.pay_leg_freq_months = str(
                                 FloatUtil.to_int_or_float(pay_leg_freq_months_entry.value)
@@ -134,7 +134,7 @@ class OneStepSolution(HackathonSolution):
                         if isinstance(pay_leg_float_spread_bp, float):
                             output_.pay_leg_float_spread_bp = str(FloatUtil.to_int_or_float(pay_leg_float_spread_bp))
                         elif pay_leg_float_spread_bp is not None:
-                            pay_leg_float_spread_bp = NumberEntry(text=str(pay_leg_float_spread_bp))
+                            pay_leg_float_spread_bp = NumberEntry(text=str(pay_leg_float_spread_bp)).build()
                             pay_leg_float_spread_bp.run_generate()
                             output_.pay_leg_float_spread_bp = str(
                                 FloatUtil.to_int_or_float(pay_leg_float_spread_bp.value)
@@ -148,7 +148,7 @@ class OneStepSolution(HackathonSolution):
                         if isinstance(pay_leg_fixed_rate_pct, float):
                             output_.pay_leg_fixed_rate_pct = str(FloatUtil.to_int_or_float(pay_leg_fixed_rate_pct))
                         elif pay_leg_fixed_rate_pct is not None:
-                            pay_leg_fixed_rate_pct = NumberEntry(text=str(pay_leg_fixed_rate_pct))
+                            pay_leg_fixed_rate_pct = NumberEntry(text=str(pay_leg_fixed_rate_pct)).build()
                             pay_leg_fixed_rate_pct.run_generate()
                             output_.pay_leg_fixed_rate_pct = str(
                                 FloatUtil.to_int_or_float(pay_leg_fixed_rate_pct.value)
@@ -162,7 +162,7 @@ class OneStepSolution(HackathonSolution):
                         if isinstance(rec_leg_notional, float):
                             output_.rec_leg_notional = str(FloatUtil.to_int_or_float(rec_leg_notional))
                         elif rec_leg_notional is not None:
-                            rec_leg_notional = NumberEntry(text=str(rec_leg_notional))
+                            rec_leg_notional = NumberEntry(text=str(rec_leg_notional)).build()
                             rec_leg_notional.run_generate()
                             output_.rec_leg_notional = str(FloatUtil.to_int_or_float(rec_leg_notional.value))
                     except Exception as e:
@@ -182,7 +182,7 @@ class OneStepSolution(HackathonSolution):
                         if isinstance(rec_leg_freq_months, int):
                             output_.rec_leg_freq_months = str(FloatUtil.to_int_or_float(rec_leg_freq_months))
                         elif rec_leg_freq_months is not None:
-                            rec_leg_freq_months_entry = NumberEntry(text=str(rec_leg_freq_months))
+                            rec_leg_freq_months_entry = NumberEntry(text=str(rec_leg_freq_months)).build()
                             rec_leg_freq_months_entry.run_generate()
                             output_.rec_leg_freq_months = str(
                                 FloatUtil.to_int_or_float(rec_leg_freq_months_entry.value)
@@ -207,7 +207,7 @@ class OneStepSolution(HackathonSolution):
                         if isinstance(rec_leg_float_spread_bp, float):
                             output_.rec_leg_float_spread_bp = str(FloatUtil.to_int_or_float(rec_leg_float_spread_bp))
                         elif rec_leg_float_spread_bp is not None:
-                            rec_leg_float_spread_bp = NumberEntry(text=str(rec_leg_float_spread_bp))
+                            rec_leg_float_spread_bp = NumberEntry(text=str(rec_leg_float_spread_bp)).build()
                             rec_leg_float_spread_bp.run_generate()
                             output_.rec_leg_float_spread_bp = str(
                                 FloatUtil.to_int_or_float(rec_leg_float_spread_bp.value)
@@ -221,7 +221,7 @@ class OneStepSolution(HackathonSolution):
                         if isinstance(rec_leg_fixed_rate_pct, float):
                             output_.rec_leg_fixed_rate_pct = str(FloatUtil.to_int_or_float(rec_leg_fixed_rate_pct))
                         elif rec_leg_fixed_rate_pct is not None:
-                            rec_leg_fixed_rate_pct = NumberEntry(text=str(rec_leg_fixed_rate_pct))
+                            rec_leg_fixed_rate_pct = NumberEntry(text=str(rec_leg_fixed_rate_pct)).build()
                             rec_leg_fixed_rate_pct.run_generate()
                             output_.rec_leg_fixed_rate_pct = str(
                                 FloatUtil.to_int_or_float(rec_leg_fixed_rate_pct.value)

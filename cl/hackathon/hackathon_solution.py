@@ -270,7 +270,7 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
                 "TradeId": trade_id,
                 "TrialId": trial_id,
             },
-        )
+        ).build()
 
         # Save and submit task
         DbContext.save_one(handler_task)

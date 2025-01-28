@@ -26,8 +26,8 @@ from cl.tradeentry.entries.amount_entry import AmountEntry
 from cl.tradeentry.entries.ccy_entry import CcyEntry
 from cl.tradeentry.entries.date_entry import DateEntry
 from cl.tradeentry.entries.date_or_tenor_entry import DateOrTenorEntry
-from cl.tradeentry.entries.number_entry import NumberEntry
 from cl.tradeentry.entries.freq_entry import FreqEntry
+from cl.tradeentry.entries.number_entry import NumberEntry
 from cl.tradeentry.trades.ccy_key import CcyKey
 from cl.hackathon.hackathon_output import HackathonOutput
 from cl.hackathon.hackathon_solution import HackathonSolution

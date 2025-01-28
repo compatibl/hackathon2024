@@ -106,7 +106,7 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
     """The list of retrievals."""
 
     def get_key(self) -> HackathonSolutionKey:
-        return HackathonSolutionKey(solution_id=self.solution_id)
+        return HackathonSolutionKey(solution_id=self.solution_id).build()
 
     def init(self) -> None:
         """Similar to __init__ but can use fields set after construction."""

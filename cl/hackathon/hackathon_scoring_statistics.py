@@ -77,4 +77,4 @@ class HackathonScoringStatistics(HackathonScoringStatisticsKey, RecordMixin[Hack
     """Receive leg fixed rate in percent (omit for a floating leg)."""
 
     def get_key(self) -> HackathonScoringStatisticsKey:
-        return HackathonScoringStatisticsKey(solution=self.solution)
+        return HackathonScoringStatisticsKey(solution=self.solution).build()

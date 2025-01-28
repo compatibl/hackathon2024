@@ -33,7 +33,7 @@ class HackathonInput(HackathonInputKey, RecordMixin[HackathonInputKey]):
     """Trade entry text for the specified trade."""
 
     def get_key(self) -> HackathonInputKey:
-        return HackathonInputKey(trade_group=self.trade_group, trade_id=self.trade_id)
+        return HackathonInputKey(trade_group=self.trade_group, trade_id=self.trade_id).build()
 
     def get_expected_output(self) -> HackathonOutput:
         expected_output_key = HackathonOutputKey(

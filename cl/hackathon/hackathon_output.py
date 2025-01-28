@@ -85,4 +85,4 @@ class HackathonOutput(HackathonOutputKey, RecordMixin[HackathonOutputKey]):
             trade_group=self.trade_group,
             trade_id=self.trade_id,
             trial_id=self.trial_id,
-        )
+        ).build()

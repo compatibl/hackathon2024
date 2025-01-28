@@ -15,11 +15,12 @@
 from dataclasses import dataclass
 from typing import Type
 from cl.runtime.records.for_dataclasses.extensions import required
+from cl.runtime.records.for_dataclasses.freezable import Freezable
 from cl.runtime.records.key_mixin import KeyMixin
 
 
 @dataclass(slots=True)
-class HackathonSolutionKey(KeyMixin):
+class HackathonSolutionKey(Freezable, KeyMixin):
     """Define parameters to convert trade entry text to the trade and perform scoring."""
 
     solution_id: str = required()

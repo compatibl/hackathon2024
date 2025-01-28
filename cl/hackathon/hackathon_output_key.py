@@ -15,12 +15,13 @@
 from dataclasses import dataclass
 from typing import Type
 from cl.runtime.records.for_dataclasses.extensions import required
+from cl.runtime.records.for_dataclasses.freezable import Freezable
 from cl.runtime.records.key_mixin import KeyMixin
 from cl.hackathon.hackathon_solution_key import HackathonSolutionKey
 
 
 @dataclass(slots=True)
-class HackathonOutputKey(KeyMixin):
+class HackathonOutputKey(Freezable, KeyMixin):
     """Output fields for a single hackathon trade obtained using the specified solution."""
 
     solution: HackathonSolutionKey = required()

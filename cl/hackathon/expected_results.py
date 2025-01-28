@@ -32,4 +32,4 @@ class ExpectedResults(HackathonSolution):
 
     def init(self) -> None:
         """Similar to __init__ but can use fields set after construction."""
-        self.llm = LlmKey(llm_id="Not required")
+        self.llm = LlmKey(llm_id="Not required").build()

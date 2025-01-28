@@ -41,6 +41,6 @@ class HackathonInput(HackathonInputKey, RecordMixin[HackathonInputKey]):
             trade_group=self.trade_group,
             trade_id=self.trade_id,
             trial_id="0",
-        )
+        ).build()
         expected_output = DbContext.load_one(HackathonOutput, expected_output_key)
         return expected_output

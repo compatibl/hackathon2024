@@ -55,7 +55,7 @@ def test_expected_results(pytest_default_db):
             trade_group=input.trade_group,
             trade_id=input.trade_id,
             trial_id="0",
-        )
+        ).build()
         output = DbContext.load_one_or_none(HackathonOutput, output_key)
         if output is None:
             raise UserError(f"Expected output record is not found for output key {output_key}")

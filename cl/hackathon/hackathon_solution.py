@@ -16,7 +16,7 @@ from abc import ABC
 from abc import abstractmethod
 from collections import Counter
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Final
 from typing import List
 from typing import Tuple
@@ -28,6 +28,7 @@ from cl.runtime.log.log_message import LogMessage
 from cl.runtime.plots.heat_map_plot import HeatMapPlot
 from cl.runtime.primitive.case_util import CaseUtil
 from cl.runtime.primitive.timestamp import Timestamp
+from cl.runtime.records.data_util import DataUtil
 from cl.runtime.records.for_dataclasses.extensions import required
 from cl.runtime.records.type_util import TypeUtil
 from cl.runtime.routers.tasks.run_response_item import handler_queue
@@ -213,13 +214,13 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
             trial_id=trial_id,
             entry_text=entry_text,
             status="Pending",
-        )
+        ).build()
         DbContext.save_one(output_)
 
     def score_trial_output(self, trade_id: str, trial_id: str) -> None:
 
         info_msg = f"Scoring trade_id={trade_id} trial_id={trial_id} for {self.solution_id}"
-        log_message = LogMessage(level="Info", message=info_msg)
+        log_message = LogMessage(level="Info", message=info_msg).build()
         DbContext.save_one(log_message)
 
         if self.is_cancelled(self.solution_id):
@@ -230,7 +231,7 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
             trade_group=self.trade_group,
             trade_id=trade_id,
             trial_id=trial_id,
-        )
+        ).build()
         output_ = DbContext.load_one(HackathonOutput, output_key)
 
         if output_.status == "Cancelled":
@@ -241,15 +242,13 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
             raise UserError(f"Scoring for this output is already running. Change status to Pending to rerun.")
 
         # Mark as running
-        output_.status = "Running"
-        DbContext.save_one(output_)
+        DbContext.save_one(replace(output_, status="Running").build())
 
         # Run scoring
-        self.score_output(output_)
+        self.score_output(replace(output_))
 
         # Mark as completed
-        output_.status = "Completed"
-        DbContext.save_one(output_)
+        DbContext.save_one(replace(output_, status="Completed").build())
 
     def submit_trial_output(self, *, trade_id: str, trial_id: str) -> None:
 
@@ -293,7 +292,7 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
     @classmethod
     def is_cancelled(cls, solution_id: str) -> bool:
         """Check if scoring has been cancelled."""
-        solution = DbContext.load_one(HackathonSolution, HackathonSolutionKey(solution_id=solution_id))
+        solution = DbContext.load_one(HackathonSolution, HackathonSolutionKey(solution_id=solution_id).build())
         result = solution.status == "Cancelled"
         return result
 
@@ -303,14 +302,15 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
         timestamp = Timestamp.create()
         base_solution_id = self.solution_id.split(".")[0]
 
-        # Copy solution under a new name for scoring
         scored_solution = DbContext.load_one(type(self), self.get_key())
-        scored_solution.solution_id = f"{base_solution_id}.{timestamp}"
 
-        """Reset the score."""
-        scored_solution.status = "Running"
-        scored_solution.trial_count = str(trial_count)
-        DbContext.save_one(scored_solution)
+        # Save status
+        DbContext.save_one(replace(
+            scored_solution,
+            solution_id = f"{base_solution_id}.{timestamp}",
+            status = "Running",
+            trial_count = str(trial_count)
+        ).build())
 
         # Save outputs
         for trial_index in range(trial_count):
@@ -326,14 +326,8 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
             for input_ in self.get_inputs():
                 scored_solution.submit_trial_output(trade_id=input_.trade_id, trial_id=str(trial_index))
 
-        # Compare solution outputs with expected outputs and save HackathonScoreItems for each pair
-        # scored_solution.status = "Analyzing"
-        # DbContext.save_one(scored_solution)
-        # scored_solution.calculate()
-
-        # Save scoring object with total score
-        scored_solution.status = "Completed"
-        DbContext.save_one(scored_solution)
+        # Save status
+        DbContext.save_one(replace(scored_solution, status = "Completed").build())
 
     def run_analyze(self):
         # Compare solution outputs with expected outputs and save HackathonScoreItems for each pair
@@ -434,7 +428,7 @@ class HackathonSolution(HackathonSolutionKey, RecordMixin[HackathonSolutionKey],
                     trade_group=input_.trade_group,
                     trade_id=input_.trade_id,
                     trial_id=trial_id,
-                )
+                ).build()
 
                 actual_output = DbContext.load_one(HackathonOutput, actual_output_key)
                 # while actual_output.status != "Completed":
